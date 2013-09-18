@@ -12,9 +12,9 @@ class TestTemplate < MiniTest::Unit::TestCase
   end
 
   # All test MUST start with "test"!
-  def test_XXX
-    fail("Not implemented")
-  end
+  #def test_XXX
+  #  fail("Not implemented")
+  #end
 
 end
       
