@@ -7,7 +7,7 @@ MiniTest::Reporters.use! MiniTest::Reporters::RubyMineReporter.new
 class TestRule < MiniTest::Unit::TestCase
   def setup
     @fact_table = FactTable.new
-    @rule = Rule.new(@fact_table)
+    @rule = Rule.new
   end
 
   def teardown
@@ -22,13 +22,13 @@ class TestRule < MiniTest::Unit::TestCase
   def test_rule_can_be_true
     @rule.add(:property, 'truthy_value')
     @fact_table[:property]='truthy_value'
-    assert(@rule.check)
+    assert(@rule.check(@fact_table))
   end
 
   def test_rule_can_be_false
     @rule.add(:property, 'falsy_value')
     @fact_table[:property]='truthy_value'
-    refute(@rule.check)
+    refute(@rule.check(@fact_table))
   end
 
   def test_rule_fails_if_single_conjunct_is_false
@@ -36,7 +36,25 @@ class TestRule < MiniTest::Unit::TestCase
     @fact_table[:property_1]='true'
     @rule.add(:property_2, 'false')
     @fact_table[:property_2]='true'
-    refute(@rule.check)
+    refute(@rule.check(@fact_table))
+  end
+
+  def test_can_insert_result_into_table
+    @rule.add :property, 'true'
+    @fact_table[:property]='true'
+    fake_source = Class.new do
+      def ask(key)
+        nil
+      end
+    end
+    #noinspection RubyArgCount
+    @fact_table.source = fake_source.new
+    assert_nil(@fact_table[:if_true_property])
+
+    @rule.add_result :if_true_property, 'new_fact_in_table'
+    @rule.check @fact_table
+
+    assert_equal @fact_table[:if_true_property], 'new_fact_in_table'
   end
 
 end

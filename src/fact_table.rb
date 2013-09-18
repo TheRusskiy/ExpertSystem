@@ -1,11 +1,14 @@
 class FactTable < Hash
+  alias :super_accessor :[]
   attr_accessor :source
   def initialize
-    #super
+    @changed=false
   end
 
   def []=(key, value)
+    old_value=super_accessor(key)
     super
+    @changed = true unless old_value == value
   end
 
   def [](key)
@@ -14,6 +17,14 @@ class FactTable < Hash
       self[key]=@source.ask(key)
     end
     result
+  end
+
+  def changed?
+    @changed
+  end
+
+  def reset_changed
+    @changed=false
   end
 
 
