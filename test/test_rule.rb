@@ -39,6 +39,16 @@ class TestRule < MiniTest::Unit::TestCase
     refute(@rule.check(@fact_table))
   end
 
+  def test_can_have_multiple_results
+    @rule.add(:property, 'true')
+    @fact_table[:property]='true'
+    @rule.add_result(:property_1, 'value1')
+    @rule.add_result(:property_2, 'value2')
+    @rule.check @fact_table
+    assert_equal(@fact_table[:property_1], 'value1')
+    assert_equal(@fact_table[:property_2], 'value2')
+  end
+
   def test_can_insert_result_into_table
     @rule.add :property, 'true'
     @fact_table[:property]='true'

@@ -43,16 +43,18 @@ class ExpertWindow < Qt::MainWindow
 
   def create_actions
     @exit_action = Qt::Action.new('Exit', self)
-    @exit_action.shortcut = Qt::KeySequence.new( 'Ctrl+x' )
+    @exit_action.shortcut = Qt::KeySequence.new( 'Ctrl+X' )
     @exit_action.statusTip = 'Close the program'
     connect(@exit_action, SIGNAL(:triggered), self, SLOT(:close_program))
 
     @switch_to_expert_mode = Qt::Action.new('Expert mode', self)
+    @switch_to_expert_mode.shortcut = Qt::KeySequence.new( 'Ctrl+E' )
     @switch_to_expert_mode.checkable = true
     @switch_to_expert_mode.statusTip = 'In this mode you can edit rules'
     connect(@switch_to_expert_mode, SIGNAL(:triggered), self, SLOT(:switch_to_expert_mode))
 
     @switch_to_user_mode = Qt::Action.new('User mode', self)
+    @switch_to_user_mode.shortcut = Qt::KeySequence.new( 'Ctrl+U' )
     @switch_to_user_mode.checkable = true
     @switch_to_user_mode.statusTip = 'In this mode you can get recommendations'
     connect(@switch_to_user_mode, SIGNAL(:triggered), self, SLOT(:switch_to_user_mode))

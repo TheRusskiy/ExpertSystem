@@ -75,9 +75,20 @@ class TestExpertSystem < MiniTest::Unit::TestCase
   end
 
   def test_raises
-    skip 'todo'
-    assert_raises(ExpertSystem::IncorrectSystemStateException) do
-
+    assert_raises(ArgumentError) do
+      # fact table = nil
+      ExpertSystem.new nil
+    end
+    assert_raises(ExpertSystem::IncorrectStateException) do
+      system = ExpertSystem.new({})
+      #no goal
+      system.start
+    end
+    assert_raises(ExpertSystem::IncorrectStateException) do
+      system = ExpertSystem.new({})
+      system.goal='Will it blend?'
+      #no start
+      system.result
     end
   end
 

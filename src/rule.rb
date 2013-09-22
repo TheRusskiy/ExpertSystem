@@ -2,6 +2,7 @@ class Rule
   attr_reader :conjuncts
   def initialize
     @conjuncts = {}
+    @results = {}
   end
 
   def add(variable, truthy_value)
@@ -9,8 +10,9 @@ class Rule
   end
 
   def add_result(key_if_true, value_if_true)
-    @key_if_true = key_if_true
-    @value_if_true = value_if_true
+    @results[key_if_true]=value_if_true
+    #@key_if_true = key_if_true
+    #@value_if_true = value_if_true
   end
 
   def check(fact_table)
@@ -19,7 +21,11 @@ class Rule
         return false
       end
     end
-    fact_table[@key_if_true]=@value_if_true
+
+    @results.each_pair do |property, value|
+      fact_table[property]=value
+    end
+
     true
   end
 
