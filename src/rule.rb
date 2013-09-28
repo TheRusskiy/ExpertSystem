@@ -28,16 +28,17 @@ class Rule
   end
 
   def to_s
-    text = 'If '
+    text = tr 'If'
+    text += ' '
     text += hash_to_text conjuncts
-    text += ' then '
+    text += " #{tr 'then'} "
     text += hash_to_text @results
     text
   end
 
   def hash_to_text hash
     text = ''
-    separator = ' and '
+    separator = " #{tr 'and'} "
     i=1
     hash.each_pair do |key, value|
       text+=key.to_s+' '+value.to_s

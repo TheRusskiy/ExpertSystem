@@ -4,7 +4,7 @@ class ExpertWindow < Qt::MainWindow
   def initialize(parent = nil)
     super(parent)
     #initialize:
-    setWindowTitle("Expert System")
+    setWindowTitle(tr "Expert System")
     create_actions
     create_menus
     create_status_bar
@@ -22,7 +22,7 @@ class ExpertWindow < Qt::MainWindow
   end
 
   def create_user_widget()
-    @user_widget = Qt::GroupBox.new 'User mode'
+    @user_widget = Qt::GroupBox.new tr 'User mode'
     layout = Qt::GridLayout.new
 
     # Add widgets to layout
@@ -32,7 +32,7 @@ class ExpertWindow < Qt::MainWindow
   end
 
   def create_expert_widget()
-    @expert_widget = Qt::GroupBox.new 'Expert Mode'
+    @expert_widget = Qt::GroupBox.new tr 'Expert Mode'
     layout = Qt::GridLayout.new
 
     # Add widgets to layout
@@ -42,43 +42,43 @@ class ExpertWindow < Qt::MainWindow
   end
 
   def create_actions
-    @exit_action = Qt::Action.new('Exit', self)
+    @exit_action = Qt::Action.new(tr('Exit'), self)
     @exit_action.shortcut = Qt::KeySequence.new( 'Ctrl+X' )
-    @exit_action.statusTip = 'Close the program'
+    @exit_action.statusTip = tr 'Close the program'
     connect(@exit_action, SIGNAL(:triggered), self, SLOT(:close_program))
 
-    @switch_to_expert_mode = Qt::Action.new('Expert mode', self)
+    @switch_to_expert_mode = Qt::Action.new(tr('Expert mode'), self)
     @switch_to_expert_mode.shortcut = Qt::KeySequence.new( 'Ctrl+E' )
     @switch_to_expert_mode.checkable = true
-    @switch_to_expert_mode.statusTip = 'In this mode you can edit rules'
+    @switch_to_expert_mode.statusTip = tr 'In this mode you can edit rules'
     connect(@switch_to_expert_mode, SIGNAL(:triggered), self, SLOT(:switch_to_expert_mode))
 
-    @switch_to_user_mode = Qt::Action.new('User mode', self)
+    @switch_to_user_mode = Qt::Action.new(tr('User mode'), self)
     @switch_to_user_mode.shortcut = Qt::KeySequence.new( 'Ctrl+U' )
     @switch_to_user_mode.checkable = true
-    @switch_to_user_mode.statusTip = 'In this mode you can get recommendations'
+    @switch_to_user_mode.statusTip = tr 'In this mode you can get recommendations'
     connect(@switch_to_user_mode, SIGNAL(:triggered), self, SLOT(:switch_to_user_mode))
 
 
-    @about_action = Qt::Action.new('About', self)
-    @about_action.statusTip = 'Show information about the program'
+    @about_action = Qt::Action.new(tr('About'), self)
+    @about_action.statusTip = tr 'Show information about the program'
     connect(@about_action, SIGNAL(:triggered), self, SLOT(:about))
   end
 
   def create_menus
-    @file_menu = menuBar.addMenu('File')
+    @file_menu = menuBar.addMenu(tr 'File')
     @file_menu.addAction(@exit_action)
 
-    @mode_menu = menuBar.addMenu('Mode')
+    @mode_menu = menuBar.addMenu(tr 'Mode')
     @mode_menu.addAction(@switch_to_user_mode)
     @mode_menu.addAction(@switch_to_expert_mode)
 
-    @help_menu = menuBar.addMenu('Help')
+    @help_menu = menuBar.addMenu(tr 'Help')
     @help_menu.addAction(@about_action)
   end
 
   def create_status_bar
-    statusBar().showMessage('Welcome!')
+    statusBar().showMessage(tr 'Welcome!')
   end
 
   def close_program
@@ -100,22 +100,27 @@ class ExpertWindow < Qt::MainWindow
   end
 
   def about
-    about_message = tr(            "MINISTRY OF EDUCATION AND SCIENCE\n"+
-                                       "OF THE RUSSIAN FEDERATION\n"+
-                                       "FEDERAL STATE EDUCATIONAL INSTITUTION\n"+
-                                       "OF HIGHER PROFESSIONAL EDUCATION\n"+
-                                       "\"SAMARA STATE AEROSPACE UNIVERSITY\n" +
-                                       "OF ACADEMICIAN S.P. KOROLYOV\"\n" +
-                                       "(NATIONAL RESEARCH UNIVERSITY) (SSAU) \n" +
-                                       "Chair of Computer Systems\n" +
-                                       "\n" +
-                                       "Authors: \n" +
-                                       "Dmitry Ishkov\n"+
-                                       "Anton Shabanov\n"+
-                                       "Group: 6502 C 245\n" +
-                                       "Instructor: associate professor Valentin Deryabkin")
+    about_message = tr('long about');
+    if about_message=='long about'
+      about_message=
+          "MINISTRY OF EDUCATION AND SCIENCE\n"+
+          "OF THE RUSSIAN FEDERATION\n"+
+          "FEDERAL STATE EDUCATIONAL INSTITUTION\n"+
+          "OF HIGHER PROFESSIONAL EDUCATION\n"+
+          "\"SAMARA STATE AEROSPACE UNIVERSITY\n" +
+          "OF ACADEMICIAN S.P. KOROLYOV\"\n" +
+          "(NATIONAL RESEARCH UNIVERSITY) (SSAU) \n" +
+          "Chair of Computer Systems\n" +
+          "\n" +
+          "Authors: \n" +
+          "Dmitry Ishkov\n"+
+          "Anton Shabanov\n"+
+          "Group: 6502 C 245\n" +
+          "Instructor: associate professor Valentin Deryabkin"
+    end
 
-    Qt::MessageBox::information(self, "About", about_message)
+
+    Qt::MessageBox::information(self, tr('About'), about_message)
   end
 
 end

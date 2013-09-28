@@ -28,9 +28,9 @@ class TestResultValue < MiniTest::Unit::TestCase
     end
     #noinspection RubyArgCount
     table = FactTable.new fakeSource.new
-    table[:foo_key] = 'foo_value'
+    table['foo_key'] = 'foo_value'
 
-    assert_equal table[:non_present_key].reason, :input
+    assert_equal table['non_present_key'].reason, :input
   end
 
 end

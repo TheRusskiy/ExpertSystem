@@ -29,15 +29,15 @@ class Explanator
 
   def ex_text result
     if result.class==ResultValue
-      result.to_s + " because\n"+ ex_text(result.reason).to_s
+      result + " #{tr 'because'}\n"+ ex_text(result.reason)
     elsif result.class==Rule
       exp = "\n"
       result.conjuncts.each_pair do |key, value|
-        exp += key.to_s + " " +ex_text(@table[key]).to_s
+        exp += key + " " +ex_text(@table[key])
       end
-      result.to_s+exp.to_s
+      result.to_s+exp
     else
-      "It is user input\n"
+      "#{tr 'It is user input'}\n"
     end
   end
 

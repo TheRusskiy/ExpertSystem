@@ -14,10 +14,10 @@ class TestExpertSystem < MiniTest::Unit::TestCase
     @fake_source = FakeSource.new
     @table.source = @fake_source
     @system = ExpertSystem.new(@table)
-    @table[:key1] = 'value1'
-    @table[:key2] = 'value2'
-    @table[:key3] = 'value3'
-    @table[:key4] = 'value4'
+    @table['key1'] = 'value1'
+    @table['key2'] = 'value2'
+    @table['key3'] = 'value3'
+    @table['key4'] = 'value4'
   end
 
   def teardown
@@ -32,24 +32,24 @@ class TestExpertSystem < MiniTest::Unit::TestCase
   end
 
   def test_can_reach_goal
-    @system.goal = :'how to fly?'
+    @system.goal = 'how to fly?'
 
-    r1 = Rule.new({:key1 => 'value1', :key2 => 'value2'},
-                  :first_rule_result => 'first_rule_result')
+    r1 = Rule.new({'key1'=> 'value1', 'key2'=> 'value2'},
+                  'first_rule_result '=> 'first_rule_result')
     # depends on 'r1' to add property to the fact table
-    r2 = Rule.new({:key3 => 'value3', :first_rule_result => 'first_rule_result'},
-                  :'how to fly?' => 'go out the window')
+    r2 = Rule.new({'key3'=> 'value3', 'first_rule_result '=> 'first_rule_result'},
+                  'how to fly?' => 'go out the window')
 
     @system.add r1, r2
     assert_equal 'go out the window', @system.result
   end
 
   def test_nil_if_cant_reach_goal
-    @system.goal = :'how to fly?'
-    r1 = Rule.new({:key1 => 'value1', :key2 => 'value2'},
-                  :first_rule_result => 'first_rule_result')
-    r2 = Rule.new({:key3 => 'WRONG', :first_rule_result => 'first_rule_result'},
-                  :'how to fly?' => 'go out the window')
+    @system.goal = 'how to fly?'
+    r1 = Rule.new({'key1'=> 'value1', 'key2'=> 'value2'},
+                  'first_rule_result '=> 'first_rule_result')
+    r2 = Rule.new({'key3'=> 'WRONG', 'first_rule_result'=> 'first_rule_result'},
+                  'how to fly?' => 'go out the window')
 
     @system.add r1, r2
     assert_nil @system.result
