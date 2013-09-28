@@ -10,6 +10,10 @@ github: https://github.com/TheRusskiy/ExpertSystem
   2. Create rules from XML
   3. Explain decisions
 
+### Explain decisions
+  1. explain order
+  2. human readable message
+
 ### todo graphics
   1. <del>Wrap into Qt</del>
   2. <del>Make 3 menus: user, expert, help</del>

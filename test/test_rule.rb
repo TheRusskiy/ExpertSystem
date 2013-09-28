@@ -67,5 +67,19 @@ class TestRule < MiniTest::Unit::TestCase
     assert_equal @fact_table[:if_true_property], 'new_fact_in_table'
   end
 
+  def test_constructor_takes_hashes
+    conjuntcts = {'k1' => 'v1', 'k2' => 'v2'}
+    results = {'k3' => 'v3', 'k4' => 'v4'}
+    rule = Rule.new(conjuntcts, results)
+    fact_table = {}.merge conjuntcts
+
+    rule.check fact_table
+    assert_equal rule.conjuncts, conjuntcts
+
+    results.each_pair do |k, v|
+      assert_equal fact_table[k], v
+    end
+  end
+
 end
       

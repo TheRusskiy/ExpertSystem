@@ -35,42 +35,26 @@ class TestExpertSystem < MiniTest::Unit::TestCase
   end
 
   def test_can_reach_goal
-    @system.goal = 'how to fly?'
+    @system.goal = :'how to fly?'
 
-    r1 = Rule.new
-    r1.add(:key1, 'value1')
-    r1.add(:key2, 'value2')
-    r1.add_result(:first_rule_result, 'first_rule_result')
-
-    r2 = Rule.new
-    r2.add(:key3, 'value3')
-    r2.add(:first_rule_result, 'first_rule_result')
+    r1 = Rule.new({:key1 => 'value1', :key2 => 'value2'},
+                  :first_rule_result => 'first_rule_result')
     # depends on 'r1' to add property to the fact table
-    r2.add_result('how to fly?', 'go out the window')
+    r2 = Rule.new({:key3 => 'value3', :first_rule_result => 'first_rule_result'},
+                  :'how to fly?' => 'go out the window')
 
-    @system.add r1
-    @system.add r2
-    @system.start
+    @system.add r1, r2
     assert_equal 'go out the window', @system.result
   end
 
   def test_nil_if_cant_reach_goal
-    @system.goal = 'how to fly?'
+    @system.goal = :'how to fly?'
+    r1 = Rule.new({:key1 => 'value1', :key2 => 'value2'},
+                  :first_rule_result => 'first_rule_result')
+    r2 = Rule.new({:key3 => 'WRONG', :first_rule_result => 'first_rule_result'},
+                  :'how to fly?' => 'go out the window')
 
-    r1 = Rule.new
-    r1.add(:key1, 'value1')
-    r1.add(:key2, 'value2')
-    r1.add_result(:first_rule_result, 'first_rule_result')
-
-    r2 = Rule.new
-    r2.add(:key3, 'WRONG')
-    r2.add(:first_rule_result, 'first_rule_result')
-    # depends on 'r1' to add property to the fact table
-    r2.add_result('how to fly?', 'go out the window')
-
-    @system.add r1
-    @system.add r2
-    @system.start
+    @system.add r1, r2
     assert_nil @system.result
   end
 
@@ -82,16 +66,35 @@ class TestExpertSystem < MiniTest::Unit::TestCase
     assert_raises(ExpertSystem::IncorrectStateException) do
       system = ExpertSystem.new({})
       #no goal
-      system.start
-    end
-    assert_raises(ExpertSystem::IncorrectStateException) do
-      system = ExpertSystem.new({})
-      system.goal='Will it blend?'
-      #no start
       system.result
     end
   end
 
+  def test_remembers_order_1
+    skip
+    r1 = Rule.new({:key1 => 'true'}, {:r1 => 'r1_result'})
+    r2 = Rule.new({:r1 => 'r1_result'}, {:r2 => 'r2_result'})
+    r3 = Rule.new({:r2 => 'r2_result'}, {:goal => 'goal_value'})
+
+    @system.add r1, r2, r3
+    @system.goal=:goal
+
+    rule_history = @system.result.rule_history
+    assert_equal rule_history, [r1, r2, r3]
+  end
+
+  def test_remembers_order_2
+    skip
+    r1 = Rule.new({:key1 => 'true'}, {:r1 => 'r1_result'})
+    r2 = Rule.new({:r1 => 'r1_result'}, {:r2 => 'r2_result'})
+    r3 = Rule.new({:r2 => 'r2_result'}, {:goal => 'goal_value'})
+
+    @system.add r3, r2, r1
+    @system.goal=:goal
+
+    rule_history = @system.result.rule_history
+    assert_equal rule_history, [r1, r2, r3]
+  end
 
 end
       

@@ -43,9 +43,9 @@ class TestFactTable < MiniTest::Unit::TestCase
     end
 
     #noinspection RubyArgCount
-    @table.source = fakeSource.new() # idea highlights this as an error for no reason
+    @table.source = fakeSource.new() # intellij idea highlights this as an error for no reason
     @table[:unknown_property]
-    # if no error raised => value cached and global warming stopped
+    # if no error raised => value cached
   end
 
   def test_table_can_detect_changes

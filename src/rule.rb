@@ -1,8 +1,8 @@
 class Rule
   attr_reader :conjuncts
-  def initialize
-    @conjuncts = {}
-    @results = {}
+  def initialize(conjuncts = {}, results = {})
+    @conjuncts = conjuncts
+    @results = results
   end
 
   def add(variable, truthy_value)

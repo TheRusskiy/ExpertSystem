@@ -8,14 +8,26 @@ class ExpertSystem
     @computation_was_made=false
   end
 
-  def add(rule)
-    @rules << rule
+  def add(*rules)
+    rules.each do |r|
+      @rules << r
+    end
   end
 
   def goal=(goal)
     @goal=goal
   end
 
+  def result
+    start
+    @fact_table[@goal]
+  end
+
+  class IncorrectStateException < Exception
+
+  end
+
+  private
   def start
     raise IncorrectStateException.new('Goal property has to be set') if @goal.nil?
     begin
@@ -25,15 +37,6 @@ class ExpertSystem
       }
     end while @fact_table.changed?
     @computation_was_made=true
-  end
-
-  def result
-    raise IncorrectStateException.new('Compute first') unless @computation_was_made
-    @fact_table[@goal]
-  end
-
-  class IncorrectStateException < Exception
-
   end
 
 end
