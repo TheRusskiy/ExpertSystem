@@ -12,8 +12,8 @@ github: https://github.com/TheRusskiy/ExpertSystem
 
 ### Explain decisions
   1. <del>explain order</del>
-  2. every conjunct has string explanation
-  3. human readable message
+  2. <del>human readable message</del>
+  3. localization map
   4. count number of rules used
   5. tree structure explanation (optional)
 

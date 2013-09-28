@@ -27,4 +27,24 @@ class Rule
     true
   end
 
+  def to_s
+    text = 'If '
+    text += hash_to_text conjuncts
+    text += ' then '
+    text += hash_to_text @results
+    text
+  end
+
+  def hash_to_text hash
+    text = ''
+    separator = ' and '
+    i=1
+    hash.each_pair do |key, value|
+      text+=key.to_s+' '+value.to_s
+      text+= separator if i!=hash.length
+      i+=1
+    end
+    text
+  end
+
 end
