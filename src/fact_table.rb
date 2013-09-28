@@ -1,8 +1,9 @@
 class FactTable < Hash
   alias :super_accessor :[]
   attr_accessor :source
-  def initialize
+  def initialize(source=nil)
     @changed=false
+    @source=source
   end
 
   def []=(key, value)
@@ -13,10 +14,11 @@ class FactTable < Hash
 
   def [](key)
     result = super
-    if super.nil?
-      self[key]=@source.ask(key)
+    if result.nil?
+      from_source = @source.ask key
+      self[key]= from_source.nil? ? nil : ResultValue.new(from_source, :input)
     end
-    result
+    super
   end
 
   def changed?

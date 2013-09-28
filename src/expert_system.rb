@@ -5,7 +5,6 @@ class ExpertSystem
     raise ArgumentError.new("Fact table can't be nil") if fact_table.nil?
     @fact_table = fact_table
     @rules=[]
-    @computation_was_made=false
   end
 
   def add(*rules)
@@ -36,7 +35,6 @@ class ExpertSystem
         rule.check @fact_table
       }
     end while @fact_table.changed?
-    @computation_was_made=true
   end
 
 end

@@ -1,7 +1,4 @@
-require 'minitest/autorun'
-require 'minitest/reporters'
-require '../src/fact_table'
-MiniTest::Reporters.use! MiniTest::Reporters::RubyMineReporter.new
+require_relative 'test_helper'
 
 class TestFactTable < MiniTest::Unit::TestCase
   def setup

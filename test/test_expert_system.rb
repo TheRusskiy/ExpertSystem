@@ -1,21 +1,18 @@
-require 'minitest/autorun'
-require 'minitest/reporters'
-require '../src/expert_system'
-require '../src/rule'
-require '../src/fact_table'
-MiniTest::Reporters.use! MiniTest::Reporters::RubyMineReporter.new
+require_relative 'test_helper'
 
 class TestExpertSystem < MiniTest::Unit::TestCase
   FakeSource = Class.new do
+    attr_writer :value
     def ask(key)
-      nil
+      @value
     end
   end
 
   def setup
     @table = FactTable.new
     #noinspection RubyArgCount
-    @table.source = FakeSource.new
+    @fake_source = FakeSource.new
+    @table.source = @fake_source
     @system = ExpertSystem.new(@table)
     @table[:key1] = 'value1'
     @table[:key2] = 'value2'
@@ -65,35 +62,9 @@ class TestExpertSystem < MiniTest::Unit::TestCase
     end
     assert_raises(ExpertSystem::IncorrectStateException) do
       system = ExpertSystem.new({})
-      #no goal
+      # goal not specified
       system.result
     end
-  end
-
-  def test_remembers_order_1
-    skip
-    r1 = Rule.new({:key1 => 'true'}, {:r1 => 'r1_result'})
-    r2 = Rule.new({:r1 => 'r1_result'}, {:r2 => 'r2_result'})
-    r3 = Rule.new({:r2 => 'r2_result'}, {:goal => 'goal_value'})
-
-    @system.add r1, r2, r3
-    @system.goal=:goal
-
-    rule_history = @system.result.rule_history
-    assert_equal rule_history, [r1, r2, r3]
-  end
-
-  def test_remembers_order_2
-    skip
-    r1 = Rule.new({:key1 => 'true'}, {:r1 => 'r1_result'})
-    r2 = Rule.new({:r1 => 'r1_result'}, {:r2 => 'r2_result'})
-    r3 = Rule.new({:r2 => 'r2_result'}, {:goal => 'goal_value'})
-
-    @system.add r3, r2, r1
-    @system.goal=:goal
-
-    rule_history = @system.result.rule_history
-    assert_equal rule_history, [r1, r2, r3]
   end
 
 end

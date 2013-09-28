@@ -11,8 +11,11 @@ github: https://github.com/TheRusskiy/ExpertSystem
   3. Explain decisions
 
 ### Explain decisions
-  1. explain order
-  2. human readable message
+  1. <del>explain order</del>
+  2. every conjunct has string explanation
+  3. human readable message
+  4. count number of rules used
+  5. tree structure explanation (optional)
 
 ### todo graphics
   1. <del>Wrap into Qt</del>

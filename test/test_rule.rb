@@ -1,8 +1,4 @@
-require 'minitest/autorun'
-require 'minitest/reporters'
-require_relative '../src/rule'
-require_relative '../src/fact_table'
-MiniTest::Reporters.use! MiniTest::Reporters::RubyMineReporter.new
+require_relative 'test_helper'
 
 class TestRule < MiniTest::Unit::TestCase
   def setup
