@@ -1,5 +1,6 @@
 class ExpertSystem
   attr_reader :rules
+  attr_accessor :goal
 
   def initialize(fact_table)
     raise ArgumentError.new("Fact table can't be nil") if fact_table.nil?
@@ -11,10 +12,6 @@ class ExpertSystem
     rules.each do |r|
       @rules << r
     end
-  end
-
-  def goal=(goal)
-    @goal=goal
   end
 
   def result

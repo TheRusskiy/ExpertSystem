@@ -59,7 +59,7 @@ class ExpertWindow < Qt::MainWindow
 
       @system = ExpertSystem.new @fact_table
       rules_hash = YAML::load @rule_editor.plainText
-      raise Psych::SyntaxError.new unless rules_hash
+      raise Exception unless rules_hash
 
       parse_rules(rules_hash['rules']).each do |rule|
         @system.add rule
@@ -85,8 +85,12 @@ class ExpertWindow < Qt::MainWindow
 
   def start_consultation
     if create_expert_system
-      @explanation_box.text = Explanator.explain_in_text @system.result, @fact_table
+      @explanation_box.text = format_result(Explanator.explain_in_text @system.result, @fact_table)
     end
+  end
+
+  def format_result text
+    "<font size=\"4\"><pre>#{@system.goal+": "+text}</pre></font>"
   end
 
   def save_rule_file(path = nil)
@@ -128,6 +132,9 @@ class ExpertWindow < Qt::MainWindow
     # Add widgets to layout
     frameStyle = Qt::Frame::Sunken | Qt::Frame::Panel
     @explanation_box = Qt::Label.new
+    #@explanation_box.format.fontPointSize = @fontSize
+    #Qt::Label.new(tr("<center><font color=\"blue\" size=\"5\"><b><i>" +
+    #                     "Super Product One</i></b></font></center>"))
     @explanation_box.frameStyle = frameStyle
     start_button = Qt::PushButton.new(tr('Start Consultation'))
     layout.addWidget start_button, 0, 0, 4
