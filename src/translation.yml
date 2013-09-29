@@ -31,7 +31,7 @@ long about: |
   Антон Шабанов
   Группа: 6502 C 245
   Преподаватель: к.т.н., доцент В.П. Дерябкин
-additional information needed: "Требуется дополнительная информация"
+additional information needed: "Вопрос"
 start consultation: "Начать консультацию"
 load rule file: "Загрузить файл с правилами"
 save rule file: "Сохранить файл с правилами"
@@ -41,7 +41,7 @@ error: "Ошибка"
 can't parse rules: "Невозможно считать правила"
 # code:
 if: "Если"
-then: "то"
+then: ", то"
 and: "и"
 it is user input: "введено пользователем"
 because: "т.к."

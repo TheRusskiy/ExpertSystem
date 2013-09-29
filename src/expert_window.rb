@@ -1,3 +1,4 @@
+# encoding: UTF-8
 class ExpertWindow < Qt::MainWindow
   require_relative 'expert_system'
   require_relative 'fact_table'
@@ -23,6 +24,7 @@ class ExpertWindow < Qt::MainWindow
       ok = Qt::Boolean.new
       item = Qt::InputDialog.getItem(self, tr('Additional information needed'),
                                      key, @options[key].values, 0, false, ok)
+      item = item.force_encoding("UTF-8")
       unless ok.value
          item = select_item key
       end
@@ -52,22 +54,25 @@ class ExpertWindow < Qt::MainWindow
   end
 
   def create_expert_system
-    @fact_table = FactTable.new
+    begin
+      @fact_table = FactTable.new
 
-    @system = ExpertSystem.new @fact_table
-    rules_hash = YAML::load @rule_editor.plainText
-    unless rules_hash
+      @system = ExpertSystem.new @fact_table
+      rules_hash = YAML::load @rule_editor.plainText
+      raise Psych::SyntaxError.new unless rules_hash
+
+      parse_rules(rules_hash['rules']).each do |rule|
+        @system.add rule
+      end
+      @system.goal = rules_hash['goal']
+
+      @information_source = WindowSource.new rules_hash['options']
+      @fact_table.source = @information_source
+      true
+    rescue Exception
       show_warning tr "Can't parse rules"
-      return false
+      false
     end
-    parse_rules(rules_hash['rules']).each do |rule|
-      @system.add rule
-    end
-    @system.goal = rules_hash['goal']
-
-    @information_source = WindowSource.new rules_hash['options']
-    @fact_table.source = @information_source
-    true
   end
 
   def parse_rules hash
@@ -91,7 +96,7 @@ class ExpertWindow < Qt::MainWindow
                                               filled_name,
                                               tr('YAML files (*.yml)'))
     text = @rule_editor.plainText
-    file = File.open path, 'w'
+    file = File.open path, 'w:utf-8'
     file.write text
     file.close
   end
@@ -101,7 +106,7 @@ class ExpertWindow < Qt::MainWindow
     path||= Qt::FileDialog.getOpenFileName(self,
                 tr('Open File'), filled_name, "YAML files (*.yml)")
     return if path.nil?
-    file = File.open(path)
+    file = File.open path, 'r:utf-8'
     set_rule_text file.to_a.reduce :+
     file.close
   end
@@ -167,9 +172,14 @@ class ExpertWindow < Qt::MainWindow
     commentFormat.foreground = Qt::Brush.new(Qt::Color.new("#8b3d06"))
     highlighter.addMapping('#.*', commentFormat)
 
-    valueFormat = Qt::TextCharFormat.new
-    valueFormat.foreground = Qt::Brush.new(Qt::Color.new("#008200"))
-    highlighter.addMapping('".*"', valueFormat)
+    #valueFormat = Qt::TextCharFormat.new
+    #valueFormat.foreground = Qt::Brush.new(Qt::Color.new("#008200"))
+    #highlighter.addMapping('".*"', valueFormat)
+
+    keywordsFormat = Qt::TextCharFormat.new
+    keywordsFormat.fontWeight = Qt::Font::Bold
+    keywordsFormat.foreground = Qt::Brush.new(Qt::Color.new("#ff587c"))
+    highlighter.addMapping("((goal)|(options)|(rules)|(if)|(then)):", keywordsFormat)
 
     #commentFormat.fontWeight = Qt::Font::Bold
     #keyFormat.background = Qt::Brush.new(Qt::Color.new("#ffe24f"))

@@ -43,23 +43,25 @@ class Highlighter < Qt::Object
 	end
 	
 	def highlight(position, removed, added)
-	    doc = sender()
-	
-	    block = doc.findBlock(position)
-	    if !block.valid?
-	        return
-		end
-	
-	    if added > removed
-	        endBlock = doc.findBlock(position + added)
-	    else
-	        endBlock = block
-		end
+    doc = sender()
 
-	    while block.valid? do #and !(endBlock < block) do
-	        highlightBlock(block)
-	        block = block.next
-	    end
+    block = doc.findBlock(position)
+    if !block.valid?
+        return
+		end
+	
+    if added > removed
+        endBlock = doc.findBlock(position + added)
+    else
+        endBlock = block
+		end
+    begin
+      while block.valid? do #and !(endBlock < block) do
+          highlightBlock(block)
+          block = block.next
+      end
+    rescue NotImplementedError
+    end
 	end
 	
 	def highlightBlock(block)

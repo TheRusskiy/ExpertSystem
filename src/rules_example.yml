@@ -1,0 +1,21 @@
+# what is the main question:
+goal: "key3"
+
+# options for answers (goal should not be present):
+options:
+  key1:
+    1: "value1_1"
+    2: "value1_2"
+  key2:
+    1: "value2_1"
+    2: "value2_2"
+    3: "value2_3"
+
+# what are the rules (make sure they are consistent):
+rules:
+  r1:
+    if:
+      key1: "value1_1"
+      key2: "value2_3"
+    then:
+      key3: "value3_1"

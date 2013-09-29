@@ -9,8 +9,9 @@ github: https://github.com/TheRusskiy/ExpertSystem
   1. <del>Corner cases</del>
   2. <del>Create rules from YAML</del>
   3. <del>Explain decisions</del>
-  4. Check that rule file is consistent
-  5. Make rule file with domain information
+  4. <del>Check that rule file is consistent</del>
+  5. <del>Make rule file with domain information</del>
+  6. Check that rule file is consistent dynamically (optional)
 
 ### Explain decisions
   1. <del>explain order</del>
@@ -24,7 +25,7 @@ github: https://github.com/TheRusskiy/ExpertSystem
   2. <del>Make 3 menus: user, expert, help</del>
   3. <del>Ask user for input of 'user' tab<del>
   4. <del>Open rule file from 'expert' tab</del>
-  5. Show help on 'help' tab
+  5. <del>Show help on 'help' tab</del>
   6. <del>Show explanations on 'user' tab</del>
   7. <del>highlighter (optional)</del>
 

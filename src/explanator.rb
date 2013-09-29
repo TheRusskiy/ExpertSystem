@@ -6,7 +6,7 @@ class Explanator
     new(table).send(:ex, result)
   end
 
-  def self.explain_in_text result, table, tab_step = '  '
+  def self.explain_in_text result, table, tab_step = '    '
     return tr 'Nothing satisfies the criteria' if result.nil?
     explanator = new(table)
     explanator.tab_step = tab_step
@@ -34,13 +34,13 @@ class Explanator
 
   def ex_text result, tab=''
     if result.class==ResultValue
-      tab+result + " #{tr 'because'}\n"+ ex_text(result.reason, tab+@tab_step)
+      result + " #{tr 'because'}\n"+ ex_text(result.reason, tab+@tab_step)
     elsif result.class==Rule
-      exp = "\n"+tab
-      result.conjuncts.each_pair do |key, value|
+      exp = "\n"
+      result.conjuncts.each_key do |key|
         exp += tab+key + " " +ex_text(@table[key], tab+@tab_step)
       end
-      result.to_s+exp
+      tab+result.to_s+exp
     else
       tab+"#{tr 'It is user input'}\n"
     end
