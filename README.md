@@ -7,8 +7,10 @@ github: https://github.com/TheRusskiy/ExpertSystem
 
 ## todo:
   1. <del>Corner cases</del>
-  2. <del>Create rules from <del>XML</del> YAML<del>
-  3. Explain decisions
+  2. <del>Create rules from YAML</del>
+  3. <del>Explain decisions</del>
+  4. Check that rule file is consistent
+  5. Make rule file with domain information
 
 ### Explain decisions
   1. <del>explain order</del>
@@ -21,9 +23,10 @@ github: https://github.com/TheRusskiy/ExpertSystem
   1. <del>Wrap into Qt</del>
   2. <del>Make 3 menus: user, expert, help</del>
   3. <del>Ask user for input of 'user' tab<del>
-  4. Open rule file from 'expert' tab
+  4. <del>Open rule file from 'expert' tab</del>
   5. Show help on 'help' tab
-  6. Show explanations on 'user' tab
+  6. <del>Show explanations on 'user' tab</del>
+  7. <del>highlighter (optional)</del>
 
 ## Requirements:
   1. <a href = "http://qt-project.org/downloads">Qt 4.8.x</a> installed in "C:\Qt\4.8.3" directory.

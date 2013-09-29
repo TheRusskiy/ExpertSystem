@@ -2,14 +2,13 @@ class ExpertWindow < Qt::MainWindow
   require_relative 'expert_system'
   require_relative 'fact_table'
   require_relative 'explanator'
+  require_relative 'highlighter'
   require 'yaml'
 
   slots :close_program, :about, :switch_to_expert_mode, :switch_to_user_mode,
-        'start_consultation()'
+        'start_consultation()', 'load_rule_file()', 'save_rule_file()'
 
   class WindowSource  < Qt::MainWindow
-    @options
-
     def initialize(options)
       super(nil)
       @options=options
@@ -29,7 +28,6 @@ class ExpertWindow < Qt::MainWindow
       end
       item
     end
-
   end
 
   def initialize(parent = nil)
@@ -49,6 +47,7 @@ class ExpertWindow < Qt::MainWindow
 
     #set correct state:
     resize(600, 400)
+    load_rule_file 'rules.yml' if File.exist? ('rules.yml')
     switch_to_user_mode
   end
 
@@ -56,7 +55,11 @@ class ExpertWindow < Qt::MainWindow
     @fact_table = FactTable.new
 
     @system = ExpertSystem.new @fact_table
-    rules_hash = YAML::load File.open('rules.yml')
+    rules_hash = YAML::load @rule_editor.plainText
+    unless rules_hash
+      show_warning tr "Can't parse rules"
+      return false
+    end
     parse_rules(rules_hash['rules']).each do |rule|
       @system.add rule
     end
@@ -64,6 +67,7 @@ class ExpertWindow < Qt::MainWindow
 
     @information_source = WindowSource.new rules_hash['options']
     @fact_table.source = @information_source
+    true
   end
 
   def parse_rules hash
@@ -75,8 +79,41 @@ class ExpertWindow < Qt::MainWindow
   end
 
   def start_consultation
-    create_expert_system
-    @explanation_box.text = Explanator.explain_in_text @system.result, @fact_table
+    if create_expert_system
+      @explanation_box.text = Explanator.explain_in_text @system.result, @fact_table
+    end
+  end
+
+  def save_rule_file(path = nil)
+    filled_name=""
+    path||= Qt::FileDialog.getSaveFileName(self,
+                                              tr('Save File'),
+                                              filled_name,
+                                              tr('YAML files (*.yml)'))
+    text = @rule_editor.plainText
+    file = File.open path, 'w'
+    file.write text
+    file.close
+  end
+
+  def load_rule_file(path = nil)
+    filled_name=""
+    path||= Qt::FileDialog.getOpenFileName(self,
+                tr('Open File'), filled_name, "YAML files (*.yml)")
+    return if path.nil?
+    file = File.open(path)
+    set_rule_text file.to_a.reduce :+
+    file.close
+  end
+
+  def show_warning message
+    reply = Qt::MessageBox::critical(self, tr('Error'),
+                                     message,
+                                     Qt::MessageBox::Retry)
+  end
+
+  def set_rule_text text
+    @rule_editor.plainText= text
   end
 
   def create_user_widget()
@@ -101,9 +138,52 @@ class ExpertWindow < Qt::MainWindow
     layout = Qt::GridLayout.new
 
     # Add widgets to layout
+    frameStyle = Qt::Frame::Sunken | Qt::Frame::Panel
+    @rule_editor = setupEditor
+    @rule_editor.frameStyle = frameStyle
+
+    load_button = Qt::PushButton.new(tr('Load rule file'))
+    load_button.statusTip = tr 'Load rule file' # todo more informative tip?
+    load_button.shortcut = Qt::KeySequence.new( 'Ctrl+O' )
+    connect(load_button, SIGNAL('clicked()'), self, SLOT('load_rule_file()'))
+
+    save_button = Qt::PushButton.new(tr('Save rule file'))
+    save_button.statusTip = tr 'Save rule file' # todo more informative tip?
+    save_button.shortcut = Qt::KeySequence.new( 'Ctrl+S' )
+    connect(save_button, SIGNAL('clicked()'), self, SLOT('save_rule_file()'))
+
+
+    layout.addWidget load_button, 0, 0
+    layout.addWidget save_button, 0, 1
+    layout.addWidget @rule_editor, 1, 0, 1, 2
 
     @expert_widget.layout=layout
     @expert_widget
+  end
+
+  def setupEditor()
+    highlighter = Highlighter.new
+    commentFormat = Qt::TextCharFormat.new
+    commentFormat.foreground = Qt::Brush.new(Qt::Color.new("#8b3d06"))
+    highlighter.addMapping('#.*', commentFormat)
+
+    valueFormat = Qt::TextCharFormat.new
+    valueFormat.foreground = Qt::Brush.new(Qt::Color.new("#008200"))
+    highlighter.addMapping('".*"', valueFormat)
+
+    #commentFormat.fontWeight = Qt::Font::Bold
+    #keyFormat.background = Qt::Brush.new(Qt::Color.new("#ffe24f"))
+    #functionFormat.fontItalic = true
+
+    font = Qt::Font.new
+    font.family = "Courier"
+    font.fixedPitch = true
+    font.pointSize = 10
+
+    editor = Qt::TextEdit.new
+    editor.font = font
+    highlighter.addToDocument(editor.document())
+    editor
   end
 
   def create_actions

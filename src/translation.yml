@@ -33,6 +33,12 @@ long about: |
   Преподаватель: к.т.н., доцент В.П. Дерябкин
 additional information needed: "Требуется дополнительная информация"
 start consultation: "Начать консультацию"
+load rule file: "Загрузить файл с правилами"
+save rule file: "Сохранить файл с правилами"
+open file: "Открыть файл с правилами"
+save file: "Сохранить файл с правилами"
+error: "Ошибка"
+can't parse rules: "Невозможно считать правила"
 # code:
 if: "Если"
 then: "то"
