@@ -1,5 +1,36 @@
 class ExpertWindow < Qt::MainWindow
-  slots :close_program, :about, :switch_to_expert_mode, :switch_to_user_mode
+  require_relative 'expert_system'
+  require_relative 'fact_table'
+  require_relative 'explanator'
+  require 'yaml'
+
+  slots :close_program, :about, :switch_to_expert_mode, :switch_to_user_mode,
+        'start_consultation()'
+
+  class WindowSource  < Qt::MainWindow
+    @options
+
+    def initialize(options)
+      super(nil)
+      @options=options
+    end
+
+    def ask key
+      select_item key
+    end
+
+    def select_item key
+      return if key.nil? or @options[key].nil?
+      ok = Qt::Boolean.new
+      item = Qt::InputDialog.getItem(self, tr('Additional information needed'),
+                                     key, @options[key].values, 0, false, ok)
+      unless ok.value
+         item = select_item key
+      end
+      item
+    end
+
+  end
 
   def initialize(parent = nil)
     super(parent)
@@ -21,11 +52,45 @@ class ExpertWindow < Qt::MainWindow
     switch_to_user_mode
   end
 
+  def create_expert_system
+    @fact_table = FactTable.new
+
+    @system = ExpertSystem.new @fact_table
+    rules_hash = YAML::load File.open('rules.yml')
+    parse_rules(rules_hash['rules']).each do |rule|
+      @system.add rule
+    end
+    @system.goal = rules_hash['goal']
+
+    @information_source = WindowSource.new rules_hash['options']
+    @fact_table.source = @information_source
+  end
+
+  def parse_rules hash
+    rules = []
+    hash.each_value do |r|
+      rules << Rule.new(r['if'], r['then'])
+    end
+    rules
+  end
+
+  def start_consultation
+    create_expert_system
+    @explanation_box.text = Explanator.explain_in_text @system.result, @fact_table
+  end
+
   def create_user_widget()
     @user_widget = Qt::GroupBox.new tr 'User mode'
     layout = Qt::GridLayout.new
 
     # Add widgets to layout
+    frameStyle = Qt::Frame::Sunken | Qt::Frame::Panel
+    @explanation_box = Qt::Label.new
+    @explanation_box.frameStyle = frameStyle
+    start_button = Qt::PushButton.new(tr('Start Consultation'))
+    layout.addWidget start_button, 0, 0, 4
+    layout.addWidget @explanation_box, 1, 0
+    connect(start_button, SIGNAL('clicked()'), self, SLOT('start_consultation()'))
 
     @user_widget.layout=layout
     @user_widget

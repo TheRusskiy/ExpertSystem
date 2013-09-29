@@ -7,21 +7,21 @@ github: https://github.com/TheRusskiy/ExpertSystem
 
 ## todo:
   1. <del>Corner cases</del>
-  2. Create rules from XML
+  2. <del>Create rules from <del>XML</del> YAML<del>
   3. Explain decisions
 
 ### Explain decisions
   1. <del>explain order</del>
   2. <del>human readable message</del>
-  3. localization map
+  3. <del>localization map</del>
   4. count number of rules used
-  5. tree structure explanation (optional)
+  5. <del>tree structure explanation (optional)</del>
 
 ### todo graphics
   1. <del>Wrap into Qt</del>
   2. <del>Make 3 menus: user, expert, help</del>
-  3. Ask user for input of 'user' tab
-  4. Open XML rules from 'expert' tab
+  3. <del>Ask user for input of 'user' tab<del>
+  4. Open rule file from 'expert' tab
   5. Show help on 'help' tab
   6. Show explanations on 'user' tab
 

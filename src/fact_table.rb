@@ -1,3 +1,4 @@
+require_relative 'result_value'
 class FactTable < Hash
   alias :super_accessor :[]
   attr_accessor :source

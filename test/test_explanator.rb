@@ -42,20 +42,19 @@ class TestExplanator < MiniTest::Unit::TestCase
 
   def test_explanation_text
     @fake_source.value= lambda{ |key|
-      #return 'autumn' if key=='time of season is'
       return 'cloudy' if key=='sky is'
       return 'falling' if key=='leafs are'
       return 'cold' if key=='weather is'
       nil
     }
-    goal = tr 'it is going to'
+    goal = 'it is going to'
     r1= Rule.new({'time of season is' => 'autumn', 'sky is' => 'cloudy'},
                    goal  => 'rain')
     r2 = Rule.new({'leafs are' => 'falling', 'weather is' => 'cold'},
                     'time of season is' => 'autumn')
     @system.add r1, r2
     @system.goal=goal
-    text =  Explanator.explain_in_text @system.result, @table
+    text =  Explanator.explain_in_text @system.result, @table, ''
     explanation = "rain because\n" +
                   "#{r1.to_s}" + "\n" +
                   "time of season is autumn because\n" +
@@ -66,6 +65,19 @@ class TestExplanator < MiniTest::Unit::TestCase
                   "It is user input\n" +
                   "sky is cloudy because\n" +
                   "It is user input\n"
+    assert_equal explanation, text
+  end
+
+  def test_explanation_text_if_nil
+    @fake_source.value= lambda{ |key|
+      nil
+    }
+    goal = 'unreachable goal'
+    r1= Rule.new({'value' => 'key'})
+    @system.add r1
+    @system.goal=goal
+    text =  Explanator.explain_in_text @system.result, @table
+    explanation = 'Nothing satisfies the criteria'
     assert_equal explanation, text
   end
 

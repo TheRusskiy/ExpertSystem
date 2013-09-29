@@ -1,11 +1,16 @@
 # encoding: utf-8
+require_relative 'rule'
 class Explanator
+  attr_accessor :tab_step
   def self.explain result, table
     new(table).send(:ex, result)
   end
 
-  def self.explain_in_text result, table
-    new(table).send(:ex_text, result)
+  def self.explain_in_text result, table, tab_step = '  '
+    return tr 'Nothing satisfies the criteria' if result.nil?
+    explanator = new(table)
+    explanator.tab_step = tab_step
+    explanator.send(:ex_text, result, '')
   end
 
   private
@@ -27,17 +32,17 @@ class Explanator
     end
   end
 
-  def ex_text result
+  def ex_text result, tab=''
     if result.class==ResultValue
-      result + " #{tr 'because'}\n"+ ex_text(result.reason)
+      tab+result + " #{tr 'because'}\n"+ ex_text(result.reason, tab+@tab_step)
     elsif result.class==Rule
-      exp = "\n"
+      exp = "\n"+tab
       result.conjuncts.each_pair do |key, value|
-        exp += key + " " +ex_text(@table[key])
+        exp += tab+key + " " +ex_text(@table[key], tab+@tab_step)
       end
       result.to_s+exp
     else
-      "#{tr 'It is user input'}\n"
+      tab+"#{tr 'It is user input'}\n"
     end
   end
 

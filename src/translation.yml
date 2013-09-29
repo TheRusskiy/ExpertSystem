@@ -31,10 +31,12 @@ long about: |
   Антон Шабанов
   Группа: 6502 C 245
   Преподаватель: к.т.н., доцент В.П. Дерябкин
+additional information needed: "Требуется дополнительная информация"
+start consultation: "Начать консультацию"
 # code:
 if: "Если"
 then: "то"
 and: "и"
-it is user input: "введено пользователей"
+it is user input: "введено пользователем"
 because: "т.к."
-
+nothing satisfies the criteria: "Невозможно удовлетворить всем критериям"
