@@ -29,8 +29,8 @@ github: https://github.com/TheRusskiy/ExpertSystem
   5. <del>Show help on 'help' tab</del>
   6. <del>Show explanations on 'user' tab</del>
   7. <del>highlighter (optional)</del>
-  8. help menu
-  9. table?
+  8. <del>help menu</del>
+  9. <del>table</del>
 
 ## Requirements:
   1. <a href = "http://qt-project.org/downloads">Qt 4.8.x</a> installed in "C:\Qt\4.8.3" directory.

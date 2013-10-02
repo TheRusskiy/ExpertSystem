@@ -7,7 +7,7 @@ class ExpertWindow < Qt::MainWindow
   require 'yaml'
 
   slots :close_program, :about, :switch_to_expert_mode, :switch_to_user_mode,
-        'start_consultation()', 'load_rule_file()', 'save_rule_file()'
+        'start_consultation()', 'load_rule_file()', 'save_rule_file()', 'switch_to_help_mode()'
 
   class WindowSource  < Qt::MainWindow
     def initialize(options)
@@ -46,6 +46,7 @@ class ExpertWindow < Qt::MainWindow
     setCentralWidget(@w)
     @w.layout.addWidget(create_user_widget, 0, 0)
     @w.layout.addWidget(create_expert_widget, 0, 0)
+    @w.layout.addWidget(create_help_widget, 0, 0)
 
     #set correct state:
     resize(600, 400)
@@ -178,24 +179,38 @@ class ExpertWindow < Qt::MainWindow
     @expert_widget
   end
 
+  def create_help_widget()
+    @help_widget = Qt::GroupBox.new tr 'Help'
+    layout = Qt::GridLayout.new
+
+
+    # Add widgets to layout
+    help_information = tr 'help information'
+    if help_information == 'help information'
+      help_information = 'Table below shows rules'
+    end
+    help_label = Qt::Label.new help_information
+    layout.addWidget help_label, 0,0;
+
+    image = Qt::Pixmap.new('table.png');
+    imageLabel = Qt::Label.new();
+    imageLabel.setPixmap(image);
+    layout.addWidget imageLabel, 1,0;
+
+    @help_widget.layout=layout
+    @help_widget
+  end
+
   def setupEditor()
     highlighter = Highlighter.new
     commentFormat = Qt::TextCharFormat.new
     commentFormat.foreground = Qt::Brush.new(Qt::Color.new("#8b3d06"))
     highlighter.addMapping('#.*', commentFormat)
 
-    #valueFormat = Qt::TextCharFormat.new
-    #valueFormat.foreground = Qt::Brush.new(Qt::Color.new("#008200"))
-    #highlighter.addMapping('".*"', valueFormat)
-
     keywordsFormat = Qt::TextCharFormat.new
     keywordsFormat.fontWeight = Qt::Font::Bold
     keywordsFormat.foreground = Qt::Brush.new(Qt::Color.new("#ff587c"))
     highlighter.addMapping("((goal)|(options)|(rules)|(if)|(then)):", keywordsFormat)
-
-    #commentFormat.fontWeight = Qt::Font::Bold
-    #keyFormat.background = Qt::Brush.new(Qt::Color.new("#ffe24f"))
-    #functionFormat.fontItalic = true
 
     font = Qt::Font.new
     font.family = "Courier"
@@ -226,6 +241,10 @@ class ExpertWindow < Qt::MainWindow
     @switch_to_user_mode.statusTip = tr 'In this mode you can get recommendations'
     connect(@switch_to_user_mode, SIGNAL(:triggered), self, SLOT(:switch_to_user_mode))
 
+    @help_action = Qt::Action.new(tr('Help'), self)
+    @help_action.statusTip = tr 'Show help'
+    @help_action.shortcut = Qt::KeySequence.new( 'Ctrl+H' )
+    connect(@help_action, SIGNAL(:triggered), self, SLOT(:switch_to_help_mode))
 
     @about_action = Qt::Action.new(tr('About'), self)
     @about_action.statusTip = tr 'Show information about the program'
@@ -242,6 +261,7 @@ class ExpertWindow < Qt::MainWindow
 
     @help_menu = menuBar.addMenu(tr 'Help')
     @help_menu.addAction(@about_action)
+    @help_menu.addAction(@help_action)
   end
 
   def create_status_bar
@@ -257,6 +277,7 @@ class ExpertWindow < Qt::MainWindow
     @switch_to_expert_mode.checked=true
     @user_widget.visible=false
     @expert_widget.visible=true
+    @help_widget.visible=false
   end
 
   def switch_to_user_mode
@@ -264,6 +285,15 @@ class ExpertWindow < Qt::MainWindow
     @switch_to_expert_mode.checked=false
     @user_widget.visible=true
     @expert_widget.visible=false
+    @help_widget.visible=false
+  end
+
+  def switch_to_help_mode
+    @switch_to_user_mode.checked=false
+    @switch_to_expert_mode.checked=false
+    @user_widget.visible=false
+    @expert_widget.visible=false
+    @help_widget.visible=true
   end
 
   def about
