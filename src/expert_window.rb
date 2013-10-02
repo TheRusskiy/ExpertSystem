@@ -85,12 +85,17 @@ class ExpertWindow < Qt::MainWindow
 
   def start_consultation
     if create_expert_system
-      @explanation_box.text = format_result(Explanator.explain_in_text @system.result, @fact_table)
+      @explanation_box.text = format_result(
+          Explanator.explain_in_text(@system.result, @fact_table),
+          @system.rules_activated)
     end
   end
 
-  def format_result text
-    "<font size=\"4\"><pre>#{@system.goal+": "+text}</pre></font>"
+  def format_result text, rules_activated
+    "<font size=\"4\"><pre>
+    #{tr('Number of rules activated')}: #{rules_activated.to_s}
+    #{@system.goal+": "+text}
+    </pre></font>"
   end
 
   def save_rule_file(path = nil)

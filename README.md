@@ -18,7 +18,7 @@ github: https://github.com/TheRusskiy/ExpertSystem
   2. <del>human readable message</del>
   3. <del>localization map</del>
   4. <del>tree structure explanation (optional)</del>
-  5. count number of rules used
+  5. <del>count number of rules used</del>
   6. present detailed information on failure to match all criteria
 
 ### todo graphics
@@ -30,6 +30,7 @@ github: https://github.com/TheRusskiy/ExpertSystem
   6. <del>Show explanations on 'user' tab</del>
   7. <del>highlighter (optional)</del>
   8. help menu
+  9. table?
 
 ## Requirements:
   1. <a href = "http://qt-project.org/downloads">Qt 4.8.x</a> installed in "C:\Qt\4.8.3" directory.

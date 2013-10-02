@@ -67,5 +67,25 @@ class TestExpertSystem < MiniTest::Unit::TestCase
     end
   end
 
+  def test_count_of_activated_rules
+    @system.goal = 'goal'
+    r1 = Rule.new( {'key1' => 'value1'}, { 'key1_1' => 'value1_1'})
+    r2 = Rule.new( {'key1_1' => 'value1_1'}, { 'key1_2' => 'value1_2'})
+    r3 = Rule.new( {'key1_2' => 'value1_2'}, { 'goal' => 'goal_value'})
+    @system.add r1, r2, r3
+    @system.result
+    assert_equal @system.rules_activated, 3
+  end
+
+  def test_count_of_activated_rules_on_failure
+    @system.goal = 'goal'
+    r1 = Rule.new( {'key1' => 'value1'}, { 'key1_1' => 'value1_1'})
+    r2 = Rule.new( {'key1_1' => 'value1_1'}, { 'non_existent_key' => 'some_value'})
+    r3 = Rule.new( {'no_such_key' => 'some_value'}, { 'some_key' => 'some_value'})
+    @system.add r1, r2, r3
+    @system.result
+    assert_equal @system.rules_activated, 2
+  end
+
 end
       
