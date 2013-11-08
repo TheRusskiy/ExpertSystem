@@ -1,14 +1,14 @@
 class FuzzyRule
   attr_reader :conjuncts
-  def initialize(conjuncts = {}, results = [])
+  def initialize(conjuncts = [], results = [])
     $cutoff||=0.2 # Kids who use globals are in Santa's naughty list
-    @conjuncts = conjuncts # [property, key, value]
-    @results = results
+    @conjuncts = conjuncts
+    @results = results # [property, key, value]
   end
 
-  def add(variable, truthy_value)
+  def add(property, key, probability)
     check_state
-    @conjuncts[variable] = truthy_value
+    @conjuncts << [property, key, probability]
   end
 
   def add_result(property_if_true, key_if_true, value_to_add)
@@ -20,13 +20,20 @@ class FuzzyRule
     return if @calculated
     result = 1
     @conjuncts.each do |c|
+      if result < $cutoff # don't ask user if there's no chance to go over $cutoff
+        result = 0
+        break
+      end
       return unless fact_table[c[0]]
-      result*=fact_table[c[0], c[1]] # if it is nil then you've messed up => exception is ok
+      result*=(fact_table[c[0], c[1]]*c[2]) # if it is nil then you've messed up => exception is ok
     end
 
     #result = 0 if result < $cutoff
+
     @results.each do |r|
-      fact_table[r[0], r[1]]=r[2]*result
+      new_value = r[2]*result
+      new_value = 0 if new_value < $cutoff
+      fact_table[r[0], r[1]]=new_value
     end
 
     @calculated = true
@@ -35,31 +42,31 @@ class FuzzyRule
   def to_s
     text = tr 'If'
     text += ' '
-    text += hash_to_text conjuncts
+    text += array_to_text conjuncts
     text += " #{tr 'then'} "
-    text += results_to_text @results
+    text += array_to_text @results
     text
   end
 
-  def hash_to_text hash
-    text = ''
-    separator = " #{tr 'and'} "
-    i=1
-    hash.each_pair do |key, value|
-      text+=key.to_s+' '+value.to_s
-      text+= separator if i!=hash.length
-      i+=1
-    end
-    text
-  end
+  #def array_to_text array
+  #  text = ''
+  #  separator = " #{tr 'and'} "
+  #  i=1
+  #  array.each_pair do |key, value|
+  #    text+=key.to_s+' '+value.to_s
+  #    text+= separator if i!=array.length
+  #    i+=1
+  #  end
+  #  text
+  #end
 
-  def results_to_text results
+  def array_to_text array
     text = ''
     separator = " #{tr 'and'} "
     i=1
-    results.each do |r|
+    array.each do |r|
       text+=r[0].to_s+' '+r[1].to_s+" #{tr 'with probability'} #{r[2]}"
-      text+= separator if i!=results.length
+      text+= separator if i!=array.length
       i+=1
     end
     text

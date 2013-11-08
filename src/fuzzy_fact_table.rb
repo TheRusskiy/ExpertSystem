@@ -20,9 +20,9 @@ class FuzzyFactTable# < Hash
 
   def [](property, key=nil)
     property = property.to_s
+    @props[property]||=@source.ask(property)
     return @props[property] if key.nil?
     key = key.to_s
-    @props[property]||=@source.ask property
     @props[property].nil? ? nil : @props[property][key]
   end
 
