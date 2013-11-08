@@ -55,11 +55,13 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
     assert_in_delta @fact_table['result_property_2', 'result_key_3'], 0.45
   end
 
-  def test_constructor_takes_hashes
-    skip 'todo'
+  def test_constructor_takes_bulk_params
     conjuncts = {'k1' => 'v1', 'k2' => 'v2'}
     results = [['k3', 'v3', 0.5], ['k4', 'v4', 0.6]]
     rule = FuzzyRule.new(conjuncts, results)
+    results.each do |r|
+      fact_table[r[0], r[1]]=r[2]
+    end
     fact_table = {}.merge conjuncts
 
     rule.calculate fact_table

@@ -3,6 +3,7 @@ require 'minitest/autorun'
 require 'minitest/reporters'
 MiniTest::Reporters.use! MiniTest::Reporters::RubyMineReporter.new
 require '../src/expert_system'
+require '../src/fuzzy_expert_system'
 require '../src/fact_table'
 require '../src/fuzzy_fact_table'
 require '../src/rule'
