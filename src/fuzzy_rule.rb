@@ -16,15 +16,15 @@ class FuzzyRule
     @results << [property_if_true, key_if_true, value_to_add]
   end
 
-  def calculate(fact_table)
-    return if @calculated
+  def check(fact_table)
+    return true if @calculated
     result = 1
     @conjuncts.each do |c|
       if result < $cutoff # don't ask user if there's no chance to go over $cutoff
         result = 0
         break
       end
-      return unless fact_table[c[0]]
+      return false unless fact_table[c[0]]
       result*=(fact_table[c[0], c[1]]*c[2]) # if it is nil then you've messed up => exception is ok
     end
 
@@ -37,6 +37,7 @@ class FuzzyRule
     end
 
     @calculated = true
+    true
   end
 
   def to_s

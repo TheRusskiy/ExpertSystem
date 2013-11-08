@@ -20,7 +20,7 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
     @rule.add('property', 'key', 0.6)
     @rule.add_result('result_property', 'result_key', 0.7)
     @fact_table['property', 'key']=0.8
-    @rule.calculate(@fact_table)
+    @rule.check(@fact_table)
     assert_in_delta @fact_table['result_property', 'result_key'], 0.336
   end
 
@@ -28,7 +28,7 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
     @rule.add('property', 'key', 0.5)
     @rule.add_result('result_property', 'result_key', 0.5)
     @fact_table['property', 'key']=0.5
-    @rule.calculate(@fact_table)
+    @rule.check(@fact_table)
     assert_in_delta @fact_table['result_property', 'result_key'], 0
   end
 
@@ -43,7 +43,7 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
       @already_called = true
       return {'key' => 0.3}
     }
-    @rule.calculate(@fact_table)
+    @rule.check(@fact_table)
     assert_in_delta @fact_table['result_property', 'result_key'], 0
   end
 
@@ -51,9 +51,9 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
     @rule.add('property', 'key', 1)
     @rule.add_result('result_property', 'result_key', 0.8)
     @fact_table['property', 'key']=0.6
-    @rule.calculate(@fact_table)
+    @rule.check(@fact_table)
     assert_in_delta @fact_table['result_property', 'result_key'], 0.48
-    @rule.calculate(@fact_table)
+    @rule.check(@fact_table)
     assert_in_delta @fact_table['result_property', 'result_key'], 0.48
   end
 
@@ -63,7 +63,7 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
     @rule.add_result('result_property_1', 'result_key_2', 0.6)
     @rule.add_result('result_property_2', 'result_key_3', 0.9)
     @fact_table['property', 'key']=0.5
-    @rule.calculate(@fact_table)
+    @rule.check(@fact_table)
     assert_in_delta @fact_table['result_property_1', 'result_key_1'], 0.4
     assert_in_delta @fact_table['result_property_1', 'result_key_2'], 0.3
     assert_in_delta @fact_table['result_property_2', 'result_key_3'], 0.45
@@ -78,7 +78,7 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
       @fact_table[r[0], r[1]]=0.8
     end
 
-    rule.calculate @fact_table
+    rule.check @fact_table
     assert_equal rule.conjuncts, conjuncts
 
     results.each_with_index do |r, i|

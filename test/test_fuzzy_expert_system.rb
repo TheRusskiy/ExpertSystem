@@ -13,12 +13,7 @@ class TestFuzzyExpertSystem < MiniTest::Unit::TestCase
     #noinspection RubyArgCount
     @fake_source = FakeSource.new
     @table.source = @fake_source
-    @system = FuzzyExpertSystem.new(@table)
-    @table['p1', 'k1'] = 0.7
-    @table['p1', 'k2'] = 0.3
-    @table['p2', 'k1'] = 0.5
-    @table['p2', 'k2'] = 0.5
-    @table['p3', 'k1'] = 1
+    @system = ExpertSystem.new(@table)
   end
 
   def teardown
@@ -33,33 +28,36 @@ class TestFuzzyExpertSystem < MiniTest::Unit::TestCase
   end
 
   def test_can_reach_goal
-    skip
     @system.goal = 'how to fly?'
 
-    r1 = FuzzyRule.new({'key1'=> 'value1', 'key2'=> 'value2'},
-                  'first_rule_result '=> 'first_rule_result')
+    @table['pr1', 'k1'] = 0.8
+    r1 = FuzzyRule.new([['pr1', 'k1', 0.9]], # conjunct
+                       [['pr2', 'k1', 0.9]]) # result
     # depends on 'r1' to add property to the fact table
-    r2 = Rule.new({'key3'=> 'value3', 'first_rule_result '=> 'first_rule_result'},
-                  'how to fly?' => 'go out the window')
+    r2 = FuzzyRule.new([['pr2', 'k1', 0.9]], # conjunct
+                  [['how to fly?','go out the window', 0.5], ['how to fly?', 'buy a jet', 0.6]]) # result
 
     @system.add r1, r2
-    assert_equal 'go out the window', @system.result
+    assert_equal @system.result.length, 2
+    assert_in_delta @system.result['go out the window'], 0.8*0.9*0.9*0.9*0.5
+    assert_in_delta @system.result['buy a jet'], 0.8*0.9*0.9*0.9*0.6
   end
 
   def test_nil_if_cant_reach_goal
-    skip
     @system.goal = 'how to fly?'
-    r1 = Rule.new({'key1'=> 'value1', 'key2'=> 'value2'},
-                  'first_rule_result '=> 'first_rule_result')
-    r2 = Rule.new({'key3'=> 'WRONG', 'first_rule_result'=> 'first_rule_result'},
-                  'how to fly?' => 'go out the window')
+
+    @table['pr1', 'k1'] = 0.8
+    r1 = FuzzyRule.new([['pr1', 'k1', 0.9]], # conjunct
+                       [['pr2', 'k1', 0.9]]) # result
+    # depends on 'r1' to add property to the fact table
+    r2 = FuzzyRule.new([['WRONG', 'k1', 0.9]], # << WRONG
+                       [['how to fly?','go out the window', 0.5], ['how to fly?', 'buy a jet', 0.6]]) # result
 
     @system.add r1, r2
-    assert_nil @system.result
+    assert_equal @system.result, nil
   end
 
   def test_raises
-    skip
     assert_raises(ArgumentError) do
       # fact table = nil
       ExpertSystem.new nil
@@ -72,25 +70,32 @@ class TestFuzzyExpertSystem < MiniTest::Unit::TestCase
   end
 
   def test_count_of_activated_rules
-    skip
-    @system.goal = 'goal'
-    r1 = Rule.new( {'key1' => 'value1'}, { 'key1_1' => 'value1_1'})
-    r2 = Rule.new( {'key1_1' => 'value1_1'}, { 'key1_2' => 'value1_2'})
-    r3 = Rule.new( {'key1_2' => 'value1_2'}, { 'goal' => 'goal_value'})
-    @system.add r1, r2, r3
-    @system.result
-    assert_equal @system.rules_activated, 3
+    @system.goal = 'how to fly?'
+
+    @table['pr1', 'k1'] = 0.8
+    r1 = FuzzyRule.new([['pr1', 'k1', 0.9]], # conjunct
+                       [['pr2', 'k1', 0.9]]) # result
+                                             # depends on 'r1' to add property to the fact table
+    r2 = FuzzyRule.new([['pr2', 'k1', 0.9]], # conjunct
+                       [['how to fly?','go out the window', 0.5], ['how to fly?', 'buy a jet', 0.6]]) # result
+
+    @system.add r1, r2
+    @system.result # calculate everything
+    assert_equal @system.rules_activated, 2
   end
 
   def test_count_of_activated_rules_on_failure
-    skip
-    @system.goal = 'goal'
-    r1 = Rule.new( {'key1' => 'value1'}, { 'key1_1' => 'value1_1'})
-    r2 = Rule.new( {'key1_1' => 'value1_1'}, { 'non_existent_key' => 'some_value'})
-    r3 = Rule.new( {'no_such_key' => 'some_value'}, { 'some_key' => 'some_value'})
-    @system.add r1, r2, r3
-    @system.result
-    assert_equal @system.rules_activated, 2
+    @system.goal = 'how to fly?'
+
+    @table['pr1', 'k1'] = 0.8
+    r1 = FuzzyRule.new([['pr1', 'k1', 0.9]], # conjunct
+                       [['pr2', 'k1', 0.9]]) # result
+                                             # depends on 'r1' to add property to the fact table
+    r2 = FuzzyRule.new([['WRONG', 'k1', 0.9]], # << WRONG
+                       [['how to fly?','go out the window', 0.5], ['how to fly?', 'buy a jet', 0.6]]) # result
+    @system.add r1, r2
+    @system.result # calculate everything
+    assert_equal @system.rules_activated, 1
   end
 
 end
