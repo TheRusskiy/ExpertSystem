@@ -9,6 +9,7 @@ require '../src/rule'
 require '../src/fuzzy_rule'
 require '../src/result_value'
 require '../src/explanator'
+require '../src/fuzzy_explanator'
 require '../src/translation_patch'
 Object.translation_map = {}
 $delta = 0.000001

@@ -33,7 +33,7 @@ class FuzzyRule
     @results.each do |r|
       new_value = r[2]*result
       new_value = 0 if new_value < $cutoff
-      fact_table[r[0], r[1]]=new_value
+      fact_table[r[0], r[1]]=FuzzyResultValue.new(new_value, self)
     end
 
     @calculated = true
@@ -43,7 +43,7 @@ class FuzzyRule
   def to_s
     text = tr 'If'
     text += ' '
-    text += array_to_text conjuncts
+    text += array_to_text @conjuncts
     text += " #{tr 'then'} "
     text += array_to_text @results
     text

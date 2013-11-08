@@ -20,7 +20,15 @@ class FuzzyFactTable# < Hash
 
   def [](property, key=nil)
     property = property.to_s
-    @props[property]||=@source.ask(property)
+    @props[property]||=lambda{
+      from_source = @source.ask(property)
+      unless from_source.nil?
+        from_source.each_pair do |k, value|
+          from_source[k] = FuzzyResultValue.new(value, :input)
+        end
+      end
+      from_source
+    }.call
     return @props[property] if key.nil?
     key = key.to_s
     @props[property].nil? ? nil : @props[property][key]

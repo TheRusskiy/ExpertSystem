@@ -1,18 +1,8 @@
 require_relative 'test_helper'
 
 class TestFuzzyExpertSystem < MiniTest::Unit::TestCase
-  FakeSource = Class.new do
-    attr_writer :value
-    def ask(key)
-      @value
-    end
-  end
-
   def setup
     @table = FuzzyFactTable.new
-    #noinspection RubyArgCount
-    @fake_source = FakeSource.new
-    @table.source = @fake_source
     @system = ExpertSystem.new(@table)
   end
 
