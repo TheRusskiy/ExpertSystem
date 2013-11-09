@@ -4,6 +4,7 @@ class FuzzyRule
     $cutoff||=0.2 # Kids who use globals are in Santa's naughty list
     @conjuncts = conjuncts
     @results = results # [property, key, value]
+    @is_rule_true = false
   end
 
   def add(property, key, probability)
@@ -17,14 +18,14 @@ class FuzzyRule
   end
 
   def check(fact_table)
-    return true if @calculated
+    return @is_rule_true if @calculated
     result = 1
     @conjuncts.each do |c|
       if result < $cutoff # don't ask user if there's no chance to go over $cutoff
         result = 0
         break
       end
-      return false unless fact_table[c[0]]
+      return @is_rule_true unless fact_table[c[0]]
       result*=(fact_table[c[0], c[1]]*c[2]) # if it is nil then you've messed up => exception is ok
     end
 
@@ -35,9 +36,10 @@ class FuzzyRule
       new_value = 0 if new_value < $cutoff
       fact_table[r[0], r[1]]=FuzzyResultValue.new(new_value, self)
     end
+    @is_rule_true = true
 
     @calculated = true
-    true
+    @is_rule_true
   end
 
   def to_s

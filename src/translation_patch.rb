@@ -9,7 +9,12 @@ class Object
   end
 
   def tr text
-    Object.translation_map[text.downcase]||text
+    translated = Object.translation_map[text.downcase]
+    if translated.nil?
+      puts "Can't find translation for:\n#{text}"
+      Object.translation_map[text.downcase] = text
+    end
+    translated||text
   end
 end
 

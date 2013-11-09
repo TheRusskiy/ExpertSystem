@@ -15,7 +15,7 @@ class FuzzyFactTable# < Hash
     new_value = value + (old_value || 0)
     raise MoreThanOneException.new if new_value > 1
     @props[property][key]=new_value
-    @changed = true unless (old_value == value)
+    @changed = true unless (value==0)
   end
 
   def [](property, key=nil)

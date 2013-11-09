@@ -1,36 +1,102 @@
 # encoding: UTF-8
 class ExpertWindow < Qt::MainWindow
   require_relative 'expert_system'
-  require_relative 'fact_table'
-  require_relative 'explanator'
+  require_relative 'fuzzy_rule'
+  require_relative 'fuzzy_fact_table'
+  require_relative 'fuzzy_explanator'
   require_relative 'highlighter'
   require 'yaml'
 
   slots :close_program, :about, :switch_to_expert_mode, :switch_to_user_mode,
         'start_consultation()', 'load_rule_file()', 'save_rule_file()', 'switch_to_help_mode()'
 
-  class WindowSource  < Qt::MainWindow
-    def initialize(options)
+  class WindowSource < Qt::MainWindow
+    slots   'spinbox_changed(double)', 'accepted()',  'rejected()', 'accept_dialog()'
+    def initialize(options, parent)
       super(nil)
+      @parent = parent
       @options=options
+      @boxes = []
     end
 
-    def ask key
-      select_item key
+    def ask property
+      select_item property
     end
 
-    def select_item key
-      return if key.nil? or @options[key].nil?
-      ok = Qt::Boolean.new
-      item = Qt::InputDialog.getItem(self, tr('Additional information needed'),
-                                     key, @options[key].values, 0, false, ok)
-      item = item.force_encoding("UTF-8")
-      unless ok.value
-         item = select_item key
+    def select_item property
+      return if property.nil? or @options[property].nil?
+      #ok = Qt::Boolean.new
+      #item = Qt::InputDialog.getItem(self, tr('Additional information needed'),
+      #                               key, @options[key], 0, false, ok)
+      #item = item.force_encoding("UTF-8")
+      #unless ok.value
+      #   item = select_item key
+      #end
+      #item
+      @dialog = Qt::Dialog.new(self)
+      @dialog.setWindowTitle tr('Additional information needed')
+      connect(@dialog, SIGNAL('accepted()'), self,  SIGNAL('accepted()'))
+      connect(@dialog, SIGNAL('rejected()'), self,  SIGNAL('rejected()'))
+      layout = Qt::GridLayout.new
+
+      @options[property].each_with_index do |option_item, i|
+        label_and_box = create_option_spin_box property, option_item
+        layout.addWidget label_and_box[0], i, 0
+        layout.addWidget label_and_box[1], i, 1
       end
-      item
+
+      accept_button = Qt::PushButton.new(tr('Start Consultation'))
+      layout.addWidget accept_button
+      connect(accept_button, SIGNAL('clicked()'), self, SLOT('accept_dialog()'))
+
+      @dialog.layout = layout
+      @dialog.exec
+
+      result_hash = {}
+      @options[property].each_with_index do |option_item, i|
+        result_hash[option_item] = @boxes[i].value/100.0
+      end
+
+      @boxes = []
+
+      result_hash
+    end
+
+
+    def create_option_spin_box property, key
+      confidence=[0, 100, 0]
+      confidenceLabel = Qt::Label.new("#{key}:")
+      confidenceSpinBox = Qt::DoubleSpinBox.new do |i|
+        i.range = confidence[0]..confidence[1]
+        i.singleStep = 10
+        i.value = confidence[2]
+        i.suffix = ' %'
+      end
+      connect(confidenceSpinBox, SIGNAL('valueChanged(double)'), self,
+              SIGNAL('spinbox_changed(double)'))
+      @boxes << confidenceSpinBox
+      [confidenceLabel, confidenceSpinBox]
+    end
+
+    def spinbox_changed value
+      sum = 0
+      @boxes.each do |box|
+        sum+=box.value
+      end
+      @boxes.each do |box|
+        box.range= 0..(box.value+(100-sum))
+      end
+    end
+
+    def accept_dialog
+      @dialog.accept
+    end
+    def accepted
+    end
+    def rejected
     end
   end
+
 
   def initialize(parent = nil)
     super(parent)
@@ -50,13 +116,13 @@ class ExpertWindow < Qt::MainWindow
 
     #set correct state:
     resize(600, 400)
-    load_rule_file 'rules.yml' if File.exist? ('rules.yml')
+    load_rule_file 'fuzzy_rules.yml' if File.exist? ('fuzzy_rules.yml')
     switch_to_user_mode
   end
 
   def create_expert_system
     begin
-      @fact_table = FactTable.new
+      @fact_table = FuzzyFactTable.new
 
       @system = ExpertSystem.new @fact_table
       rules_hash = YAML::load @rule_editor.plainText
@@ -67,7 +133,7 @@ class ExpertWindow < Qt::MainWindow
       end
       @system.goal = rules_hash['goal']
 
-      @information_source = WindowSource.new rules_hash['options']
+      @information_source = WindowSource.new rules_hash['options'], self
       @fact_table.source = @information_source
       true
     rescue Exception
@@ -76,10 +142,17 @@ class ExpertWindow < Qt::MainWindow
     end
   end
 
-  def parse_rules hash
+  def parse_rules array
     rules = []
-    hash.each_value do |r|
-      rules << Rule.new(r['if'], r['then'])
+    array.each do |r|
+      rule = FuzzyRule.new
+      r['if'].each_pair do |k, v|
+        rule.add(k, v[0], v[1])
+      end
+      r['then'].each_pair do |k, v|
+        rule.add_result(k, v[0], v[1])
+      end
+      rules << rule
     end
     rules
   end
@@ -87,16 +160,19 @@ class ExpertWindow < Qt::MainWindow
   def start_consultation
     if create_expert_system
       @explanation_box.text = format_result(
-          Explanator.explain_in_text(@system.result, @fact_table),
+          FuzzyExplanator.explain_in_text(@system.result, @fact_table),
           @system.rules_activated)
     end
   end
 
   def format_result text, rules_activated
-    "<font size=\"4\"><pre>
-    #{tr('Number of rules activated')}: #{rules_activated.to_s}
-    #{@system.goal+": "+text}
-    </pre></font>"
+    if text.respond_to? :each
+      text = text * "\n"
+    end
+    "<font size=\"4\"><pre>"+
+    "#{tr('Number of rules activated')}: #{rules_activated.to_s}\n"+
+    "#{@system.goal+":\n #{text}"}"+
+    "</pre></font>"
   end
 
   def save_rule_file(path = nil)

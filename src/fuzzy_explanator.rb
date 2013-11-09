@@ -20,7 +20,7 @@ class FuzzyExplanator
     results = []
     if result.respond_to? :key
       result.each_pair do |key, value|
-        results<<key+' '+ new(table).send(:ex_text, value, '') unless value == 0
+        results<<key+" #{tr 'with probability'} "+ new(table).send(:ex_text, value, '') unless value == 0
       end
     end
     results
@@ -53,21 +53,16 @@ class FuzzyExplanator
 
   def ex_text result, tab=''
     if result.class==FuzzyResultValue
-      result.to_s + " #{tr 'because'}\n"+ ex_text(result.reason, tab+@tab_step)
+      result.round(2).to_s + " #{tr 'because'}\n"+ ex_text(result.reason, tab+@tab_step)
     elsif result.class==FuzzyRule
       exp = "\n"
       result.conjuncts.each do |arr|
         prop = arr[0]; key = arr[1]; value = arr[2]
-        exp += tab+key + " " +ex_text(@table[prop, key], tab+@tab_step)
+        exp += tab+key + " " +ex_text(@table[prop, key].round(2), tab+@tab_step)
       end
       tab+result.to_s+exp
     else
       tab+"#{tr 'It is user input'}\n"
-      #input = ''
-      #result.each_pair do |k, v|
-      #  input+="#{tr 'because user entered it with probability'} #{v}\n"#[k, v, v.reason]
-      #end
-      #input
     end
   end
 
