@@ -39,14 +39,16 @@ class ExpertWindow < Qt::MainWindow
       connect(@dialog, SIGNAL('rejected()'), self,  SIGNAL('rejected()'))
       layout = Qt::GridLayout.new
 
-      @options[property].each_with_index do |option_item, i|
+      i=0
+      @options[property].each do |option_item|
         label_and_box = create_option_spin_box property, option_item
         layout.addWidget label_and_box[0], i, 0
         layout.addWidget label_and_box[1], i, 1
+        i+=1
       end
 
-      accept_button = Qt::PushButton.new(tr('Start Consultation'))
-      layout.addWidget accept_button
+      accept_button = Qt::PushButton.new(tr 'Ok')
+      layout.addWidget accept_button, i, 0, 1, 2
       connect(accept_button, SIGNAL('clicked()'), self, SLOT('accept_dialog()'))
 
       @dialog.layout = layout
@@ -143,6 +145,7 @@ class ExpertWindow < Qt::MainWindow
   end
 
   def parse_rules array
+    # todo refactor - getting ugly
     rules = []
     array.each do |r|
       rule = FuzzyRule.new
@@ -150,7 +153,13 @@ class ExpertWindow < Qt::MainWindow
         rule.add(k, v[0], v[1])
       end
       r['then'].each_pair do |k, v|
-        rule.add_result(k, v[0], v[1])
+        if v[0].respond_to? :each # if array in array then multiple results
+          v.each do |t|
+            rule.add_result(k, t[0], t[1])
+          end
+        else
+          rule.add_result(k, v[0], v[1])
+        end
       end
       rules << rule
     end

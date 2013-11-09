@@ -29,7 +29,7 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
     @rule.add_result('result_property', 'result_key', 0.5)
     @fact_table['property', 'key']=0.5
     @rule.check(@fact_table)
-    assert_in_delta @fact_table['result_property', 'result_key'], 0
+    assert_nil @fact_table['result_property', 'result_key']
   end
 
   def test_rule_stops_calculating_preemptively
@@ -44,7 +44,6 @@ class TestFuzzyRule < MiniTest::Unit::TestCase
       return {'key' => 0.3}
     }
     @rule.check(@fact_table)
-    assert_in_delta @fact_table['result_property', 'result_key'], 0
   end
 
   def test_rule_calculates_once

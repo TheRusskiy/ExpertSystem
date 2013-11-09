@@ -58,7 +58,7 @@ class FuzzyExplanator
       exp = "\n"
       result.conjuncts.each do |arr|
         prop = arr[0]; key = arr[1]; value = arr[2]
-        exp += tab+key + " " +ex_text(@table[prop, key].round(2), tab+@tab_step)
+        exp += tab+"#{key} #{ex_text(@table[prop, key].round(2), tab+@tab_step)}"
       end
       tab+result.to_s+exp
     else
