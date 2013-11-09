@@ -25,21 +25,15 @@ class ExpertWindow < Qt::MainWindow
 
     def select_item property
       return if property.nil? or @options[property].nil?
-      #ok = Qt::Boolean.new
-      #item = Qt::InputDialog.getItem(self, tr('Additional information needed'),
-      #                               key, @options[key], 0, false, ok)
-      #item = item.force_encoding("UTF-8")
-      #unless ok.value
-      #   item = select_item key
-      #end
-      #item
+
       @dialog = Qt::Dialog.new(self)
-      @dialog.setWindowTitle tr('Additional information needed')
+      @dialog.setWindowTitle(tr('Additional information needed')+': '+property)
       connect(@dialog, SIGNAL('accepted()'), self,  SIGNAL('accepted()'))
       connect(@dialog, SIGNAL('rejected()'), self,  SIGNAL('rejected()'))
       layout = Qt::GridLayout.new
 
-      i=0
+      layout.addWidget Qt::Label.new('<b>'+property+':</b>'), 0, 0, 1, 2
+      i=1
       @options[property].each do |option_item|
         label_and_box = create_option_spin_box property, option_item
         layout.addWidget label_and_box[0], i, 0
