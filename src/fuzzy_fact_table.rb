@@ -2,6 +2,7 @@ require_relative 'fuzzy_result_value'
 class FuzzyFactTable# < Hash
   attr_accessor :source
   attr_accessor :algebra
+  attr_accessor :current_rule
   def initialize(source=EmptySource.new)
     @changed=false
     @source=source
@@ -42,7 +43,7 @@ class FuzzyFactTable# < Hash
   def [](property, key=nil)
     property = property.to_s
     @props[property]||=lambda{
-      from_source = @source.ask(strip_special_from property)
+      from_source = @source.ask strip_special_from(property), @current_rule
       unless from_source.nil?
         from_source.each_pair do |k, value|
           from_source[k] = FuzzyResultValue.new(value, :input)
@@ -68,7 +69,7 @@ class FuzzyFactTable# < Hash
   end
 
   class EmptySource
-    def ask prop
+    def ask prop, rule=nil
       nil
     end
   end

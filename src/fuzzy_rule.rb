@@ -25,6 +25,7 @@ class FuzzyRule
         result = 0
         break
       end
+      fact_table.current_rule = self
       return @is_rule_true unless fact_table[c[0]]
       result*=(fact_table[c[0], c[1]]*c[2]) # if it is nil then you've messed up => exception is ok
     end
@@ -42,13 +43,14 @@ class FuzzyRule
     @is_rule_true
   end
 
-  def to_s
+  def to_s fold_lines = false
+    new_line = fold_lines ? "<br/>" : ''
     text = tr 'If'
     text += ' '
-    text += array_to_text @conjuncts
-    text += " #{tr 'then'} "
-    text += array_to_text @results
-    text
+    text += array_to_text @conjuncts, new_line
+    text += " #{tr 'then'} "+new_line
+    text += array_to_text @results, new_line
+    text.gsub(/@.*@/, '')
   end
 
   #def array_to_text array
@@ -63,9 +65,9 @@ class FuzzyRule
   #  text
   #end
 
-  def array_to_text array
+  def array_to_text array, new_line = ''
     text = ''
-    separator = " #{tr 'and'} "
+    separator = " #{tr 'and'} "+new_line
     i=1
     array.each do |r|
       text+=r[0].to_s+': '+r[1].to_s+" (x#{r[2]*100})"

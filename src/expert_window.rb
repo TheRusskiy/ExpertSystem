@@ -20,11 +20,11 @@ class ExpertWindow < Qt::MainWindow
       @boxes = []
     end
 
-    def ask property
-      select_item property
+    def ask property, current_rule=nil
+      select_item property, current_rule
     end
 
-    def select_item property
+    def select_item property, current_rule=nil
       return if property.nil? or @options[property].nil?
 
       @dialog = Qt::Dialog.new(self)
@@ -32,9 +32,11 @@ class ExpertWindow < Qt::MainWindow
       connect(@dialog, SIGNAL('accepted()'), self,  SIGNAL('accepted()'))
       connect(@dialog, SIGNAL('rejected()'), self,  SIGNAL('rejected()'))
       layout = Qt::GridLayout.new
-
-      layout.addWidget Qt::Label.new('<b>'+property+':</b>'), 0, 0, 1, 2
-      i=1
+      i=0
+      layout.addWidget Qt::Label.new(''+current_rule.to_s(true)+'<br/>'), i, 0, 1, 2
+      i+=1
+      layout.addWidget Qt::Label.new('<b>'+property.capitalize+':</b>'), i, 0, 1, 2
+      i+=1
       @options[property].each do |option_item|
         label_and_box = create_option_spin_box property, option_item, (@step || 100)
         layout.addWidget label_and_box[0], i, 0
