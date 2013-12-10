@@ -32,13 +32,15 @@ class ExpertSystem
     raise IncorrectStateException.new('Goal property has to be set') if @goal.nil?
     @rules_activated=0
     begin
+      new_rules = Array.new(@rules)
       @fact_table.reset_changed
       @rules.each { |rule|
         if rule.check @fact_table
           @rules_activated+=1
-          @rules.delete rule
+          new_rules.delete rule
         end
       }
+      @rules = new_rules
     end while @fact_table.changed?
     s=1
   end

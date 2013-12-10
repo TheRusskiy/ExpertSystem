@@ -36,9 +36,9 @@ class FuzzyRule
       next if new_value < $cutoff
       fact_table[r[0], r[1]]=FuzzyResultValue.new(new_value, self)
     end
-    @is_rule_true = true
 
     @calculated = true
+    @is_rule_true = true
     @is_rule_true
   end
 
@@ -68,7 +68,7 @@ class FuzzyRule
     separator = " #{tr 'and'} "
     i=1
     array.each do |r|
-      text+=r[0].to_s+' '+r[1].to_s+" (x#{r[2]})"
+      text+=r[0].to_s+': '+r[1].to_s+" (x#{r[2]})"
       text+= separator if i!=array.length
       i+=1
     end
