@@ -40,6 +40,7 @@ class ExpertSystem
         end
       }
     end while @fact_table.changed?
+    s=1
   end
 
 end
