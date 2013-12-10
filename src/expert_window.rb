@@ -36,11 +36,13 @@ class ExpertWindow < Qt::MainWindow
       layout.addWidget Qt::Label.new('<b>'+property+':</b>'), 0, 0, 1, 2
       i=1
       @options[property].each do |option_item|
-        label_and_box = create_option_spin_box property, option_item
+        label_and_box = create_option_spin_box property, option_item, (@step || 100)
         layout.addWidget label_and_box[0], i, 0
         layout.addWidget label_and_box[1], i, 1
         i+=1
       end
+
+      @step||=10
 
       accept_button = Qt::PushButton.new(tr 'Ok')
       layout.addWidget accept_button, i, 0, 1, 2
@@ -60,12 +62,12 @@ class ExpertWindow < Qt::MainWindow
     end
 
 
-    def create_option_spin_box property, key
+    def create_option_spin_box property, key, step=10
       confidence=[0, 100, 0]
       confidenceLabel = Qt::Label.new("#{key}:")
       confidenceSpinBox = Qt::DoubleSpinBox.new do |i|
         i.range = confidence[0]..confidence[1]
-        i.singleStep = 10
+        i.singleStep = step
         i.value = confidence[2]
         i.suffix = ' %'
       end

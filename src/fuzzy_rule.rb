@@ -68,7 +68,7 @@ class FuzzyRule
     separator = " #{tr 'and'} "
     i=1
     array.each do |r|
-      text+=r[0].to_s+': '+r[1].to_s+" (x#{r[2]})"
+      text+=r[0].to_s+': '+r[1].to_s+" (x#{r[2]*100})"
       text+= separator if i!=array.length
       i+=1
     end

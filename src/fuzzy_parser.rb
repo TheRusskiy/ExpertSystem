@@ -1,11 +1,17 @@
 class FuzzyParser
   def self.parse_rules array
+    @@counter||=0
     # todo refactor - getting ugly
     rules = []
     array.each do |r|
       rule = FuzzyRule.new
+      depth = 0
       r['if'].each_pair do |k, v|
-        rule.add(k, v[0], v[1])
+        depth+=1
+        @@counter+=1
+        mark = depth <= 2 ? '' : "@#{@@counter}@"
+        first = false
+        rule.add(k+mark, v[0], v[1])
       end
       r['then'].each_pair do |k, v|
         if v[0].respond_to? :each # if array in array then multiple results

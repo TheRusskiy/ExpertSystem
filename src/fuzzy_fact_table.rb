@@ -21,7 +21,7 @@ class FuzzyFactTable# < Hash
   def [](property, key=nil)
     property = property.to_s
     @props[property]||=lambda{
-      from_source = @source.ask(property)
+      from_source = @source.ask(strip_special_from property)
       unless from_source.nil?
         from_source.each_pair do |k, value|
           from_source[k] = FuzzyResultValue.new(value, :input)
@@ -40,6 +40,10 @@ class FuzzyFactTable# < Hash
 
   def reset_changed
     @changed=false
+  end
+
+  def strip_special_from property
+    property.gsub /@.*@/, ''
   end
 
   class EmptySource
