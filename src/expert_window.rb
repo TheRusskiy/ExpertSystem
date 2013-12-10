@@ -2,6 +2,7 @@
 class ExpertWindow < Qt::MainWindow
   require_relative 'expert_system'
   require_relative 'fuzzy_rule'
+  require_relative 'fuzzy_parser'
   require_relative 'fuzzy_fact_table'
   require_relative 'fuzzy_explanator'
   require_relative 'highlighter'
@@ -123,10 +124,7 @@ class ExpertWindow < Qt::MainWindow
       @system = ExpertSystem.new @fact_table
       rules_hash = YAML::load @rule_editor.plainText
       raise Exception unless rules_hash
-
-      parse_rules(rules_hash['rules']).each do |rule|
-        @system.add rule
-      end
+      @system.add FuzzyParser.parse_rules(rules_hash['rules'])
       @system.goal = rules_hash['goal']
 
       @information_source = WindowSource.new rules_hash['options'], self
@@ -136,28 +134,6 @@ class ExpertWindow < Qt::MainWindow
       show_warning tr "Can't parse rules"
       false
     end
-  end
-
-  def parse_rules array
-    # todo refactor - getting ugly
-    rules = []
-    array.each do |r|
-      rule = FuzzyRule.new
-      r['if'].each_pair do |k, v|
-        rule.add(k, v[0], v[1])
-      end
-      r['then'].each_pair do |k, v|
-        if v[0].respond_to? :each # if array in array then multiple results
-          v.each do |t|
-            rule.add_result(k, t[0], t[1])
-          end
-        else
-          rule.add_result(k, v[0], v[1])
-        end
-      end
-      rules << rule
-    end
-    rules
   end
 
   def start_consultation

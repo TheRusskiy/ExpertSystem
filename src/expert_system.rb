@@ -9,6 +9,7 @@ class ExpertSystem
   end
 
   def add(*rules)
+    rules.flatten!
     rules.each do |r|
       @rules << r
     end
@@ -42,7 +43,6 @@ class ExpertSystem
       }
       @rules = new_rules
     end while @fact_table.changed?
-    s=1
   end
 
 end
