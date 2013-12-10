@@ -62,15 +62,15 @@ class TestFuzzyExplanator < MiniTest::Unit::TestCase
     @system.goal=goal
     text =  FuzzyExplanator.explain_in_text @system.result, @table, ''
     explanation =
-        ["storm with probability 0.25 because\n"+
-        "  If time of season is: autumn (x1) and sky is: cloudy (x1) then it is going to: rain (x0.4) and it is going to: storm (x0.6)\n"+
-        "  autumn 0.6 because\n"+
-        "      If leafs are: falling (x1) and weather is: cold (x1) then time of season is: autumn (x1)\n"+
-        "      falling 0.6 because\n"+
+        ["storm with probability 25.2 because\n"+
+        "  If time of season is: autumn (x100) and sky is: cloudy (x100) then it is going to: rain (x40.0) and it is going to: storm (x60.0)\n"+
+        "  autumn 60.0 because\n"+
+        "      If leafs are: falling (x100) and weather is: cold (x100) then time of season is: autumn (x100)\n"+
+        "      falling 60.0 because\n"+
         "          It is user input\n"+
-        "      cold 1.0 because\n"+
+        "      cold 100.0 because\n"+
         "          It is user input\n"+
-        "  cloudy 0.7 because\n"+
+        "  cloudy 70.0 because\n"+
         "      It is user input\n"]
     assert_equal explanation, text
   end

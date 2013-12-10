@@ -131,9 +131,11 @@ class ExpertWindow < Qt::MainWindow
 
       @information_source = WindowSource.new rules_hash['options'], self
       @fact_table.source = @information_source
+      @fact_table.algebra = rules_hash['algebra']
       true
-    rescue Exception
+    rescue Exception => e
       show_warning tr "Can't parse rules"
+      puts e.message
       false
     end
   end

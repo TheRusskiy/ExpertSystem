@@ -1,6 +1,7 @@
 require_relative 'fuzzy_result_value'
 class FuzzyFactTable# < Hash
   attr_accessor :source
+  attr_accessor :algebra
   def initialize(source=EmptySource.new)
     @changed=false
     @source=source
@@ -12,10 +13,30 @@ class FuzzyFactTable# < Hash
     key = key.to_s
     @props[property]||=Hash.new
     old_value=@props[property][key]
-    new_value = value + (old_value || 0)
+    new_value = algebra_calculate value, old_value
     raise MoreThanOneException.new if new_value > 1
     @props[property][key]=new_value
     @changed = true unless (value==0)
+  end
+
+  def algebra_calculate(value, old_value)
+    result=nil
+    old_value||= 0
+    @algebra||='sum'
+    case @algebra
+      when 'sum' then begin
+        result = value + old_value
+      end
+      when 'am' then begin
+        result = [value, old_value].max
+      end
+      when 'ap' then begin
+        result = value + old_value - (value*old_value).fdiv(2)
+      end
+      else
+        raise Exception.new 'Unknown algebra: '+@algebra
+    end
+    result
   end
 
   def [](property, key=nil)

@@ -1,5 +1,7 @@
 # what is the main question:
 goal: "тип меню"
+# am or ap
+algebra: "am"
 
 # options for answers (goal should not be present):
 options:

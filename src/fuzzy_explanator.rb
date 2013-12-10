@@ -20,7 +20,7 @@ class FuzzyExplanator
     results = []
     if result.respond_to? :key
       result.each_pair do |key, value|
-        results<<key+" #{tr 'with probability'} "+ new(table).send(:ex_text, value, '') unless value == 0
+        results<<key+" #{tr 'with probability'} "+ new(table).send(:ex_text, value, '').gsub(/@.*@/, '') unless value == 0
       end
     end
     results
