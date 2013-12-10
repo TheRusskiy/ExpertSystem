@@ -53,7 +53,7 @@ class FuzzyExplanator
 
   def ex_text result, tab=''
     if result.class==FuzzyResultValue
-      result.round(2).to_s + " #{tr 'because'}\n"+ ex_text(result.reason, tab+@tab_step)
+      (result*100).round(2).to_s + " #{tr 'because'}\n"+ ex_text(result.reason, tab+@tab_step)
     elsif result.class==FuzzyRule
       exp = "\n"
       result.conjuncts.each do |arr|
