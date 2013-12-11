@@ -1,8 +1,20 @@
 class FuzzyResultValue
-  attr_reader :reason
+  def reason
+    @reason
+  end
+
+  def reason= value
+    unless value.respond_to? :each
+      value = [value]
+    end
+    value.each do |v|
+      @reason << v
+    end
+  end
+
   def initialize value, reason
     @number = value
-    @reason = reason
+    @reason = [reason]
   end
   def method_missing(name, *args, &blk)
     ret = @number.send(name, *args, &blk)

@@ -15,6 +15,9 @@ class FuzzyFactTable# < Hash
     @props[property]||=Hash.new
     old_value=@props[property][key]
     new_value = algebra_calculate value, old_value
+    if old_value.respond_to? :reason
+      new_value.reason=old_value.reason
+    end
     raise MoreThanOneException.new if new_value > 1
     @props[property][key]=new_value
     @changed = true unless (value==0)
