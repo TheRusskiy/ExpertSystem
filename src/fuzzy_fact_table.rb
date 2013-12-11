@@ -32,7 +32,7 @@ class FuzzyFactTable# < Hash
         result = value + old_value
       end
       when 'am' then begin
-        result = [value, old_value].max
+        result = my_max(value, old_value)
       end
       when 'ap' then begin
         result = value + old_value - (value*old_value).fdiv(2)
@@ -41,6 +41,10 @@ class FuzzyFactTable# < Hash
         raise Exception.new 'Unknown algebra: '+@algebra
     end
     result
+  end
+
+  def my_max(v1, v2)
+    v1 > v2 ? v1 : v2
   end
 
   def [](property, key=nil)

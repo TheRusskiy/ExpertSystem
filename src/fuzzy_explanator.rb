@@ -19,11 +19,16 @@ class FuzzyExplanator
     #explanator.send(:ex_text, result, '')
     results = []
     if result.respond_to? :key
+      result = self.sort_result result
       result.each_pair do |key, value|
         results<<key+" #{tr 'with probability'} "+ new(table).send(:ex_text, value, '').gsub(/@.*@/, '') unless value == 0
       end
     end
     results
+  end
+
+  def self.sort_result result
+    Hash[result.sort_by{|k, v| v.number}.reverse]
   end
 
   private

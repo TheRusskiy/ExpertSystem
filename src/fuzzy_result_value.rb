@@ -1,4 +1,5 @@
 class FuzzyResultValue
+  attr_reader :number
   def reason
     @reason
   end
