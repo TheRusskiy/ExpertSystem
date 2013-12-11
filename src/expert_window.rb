@@ -146,15 +146,38 @@ class ExpertWindow < Qt::MainWindow
     if create_expert_system
       @explanation_box.text = format_result(
           FuzzyExplanator.explain_in_text(@system.result, @fact_table),
-          @system.rules_activated)
+          @system.rules_activated,
+        @fact_table.algebra)
     end
   end
 
-  def format_result text, rules_activated
+  def human_algebra algebra
+    result="Алгебра (a): "
+    result+="(min(cfa, cfb) + cfa*cfb)/2<br/>"
+    result+="Алгебра подтверждения "
+    algebra||='sum'
+    case algebra
+      when 'sum' then begin
+        result+= "sum"
+      end
+      when 'am' then begin
+        result+= "(m): max(cfa, cfb)"
+      end
+      when 'ap' then begin
+        result+= "(p): cfa+cfb-cfa*cfb/2"
+      end
+      else
+        raise Exception.new 'Unknown algebra: '+algebra
+    end
+    result
+  end
+
+  def format_result text, rules_activated, algebra
     if text.respond_to? :each
       text = text * "\n"
     end
     "<font size=\"4\"><pre>"+
+    "#{human_algebra(algebra)}<br/>"+
     "#{tr('Number of rules activated')}: #{rules_activated.to_s}\n"+
     "#{@system.goal+":\n #{text}"}"+
     "</pre></font>"

@@ -1,3 +1,5 @@
+#encoding: utf-8
+require 'awesome_print'
 class FuzzyRule
   attr_reader :conjuncts
   def initialize(conjuncts = [], results = [])
@@ -48,7 +50,12 @@ class FuzzyRule
   end
 
   def assurance cfa, cfb
-    (my_min(cfa, cfb)+cfa*cfb)/2.0
+    result = (my_min(cfa, cfb)+cfa*cfb)/2.0
+    cfa = (cfa*100).round(0)
+    cfb = (cfb*100).round(0)
+    ass = "(min(#{cfa}, #{cfb}) + #{cfa}*#{cfb}) / 2 = #{(result*100).round(0)}" unless result == 0
+    ap({tr("rule") => self, tr("calculation") => ass}) unless result == 0
+    result
   end
 
   def my_min(a, b)

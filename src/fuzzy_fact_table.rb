@@ -36,6 +36,7 @@ class FuzzyFactTable# < Hash
       end
       when 'ap' then begin
         result = value + old_value - (value*old_value).fdiv(2)
+        result.reason = value
       end
       else
         raise Exception.new 'Unknown algebra: '+@algebra
