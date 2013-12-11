@@ -27,13 +27,17 @@ class FuzzyRule
       end
       fact_table.current_rule = self
       return @is_rule_true unless fact_table[c[0]]
-      result*=(fact_table[c[0], c[1]]*c[2]) # if it is nil then you've messed up => exception is ok
+      # result*=(fact_table[c[0], c[1]]*c[2]) # if it is nil then you've messed up => exception is ok
+      #old_result = result
+      result=assurance(result, assurance(fact_table[c[0], c[1]], c[2])) # if it is nil then you've messed up => exception is ok
+      #puts "#{fact_table[c[0], c[1]]}, #{c[2]}=#{old_result} => #{result}"
     end
 
     #result = 0 if result < $cutoff
 
     @results.each do |r|
-      new_value = r[2]*result
+      new_value = assurance(r[2],result)
+      #puts new_value
       next if new_value < $cutoff
       fact_table[r[0], r[1]]=FuzzyResultValue.new(new_value, self)
     end
@@ -41,6 +45,14 @@ class FuzzyRule
     @calculated = true
     @is_rule_true = true
     @is_rule_true
+  end
+
+  def assurance cfa, cfb
+    (my_min(cfa, cfb)+cfa*cfb)/2.0
+  end
+
+  def my_min(a, b)
+    a > b ? b : a
   end
 
   def to_s fold_lines = false
