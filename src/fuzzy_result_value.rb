@@ -1,5 +1,7 @@
 class FuzzyResultValue
-  attr_reader :number
+  def number
+    @number.respond_to?(:number) ? @number.number : @number
+  end
   def reason
     @reason
   end
